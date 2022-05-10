@@ -231,7 +231,7 @@
 
  bool mEsG = false;
  int dirExists(const char *path){struct stat info; if(stat(path, &info) != 0) return 0; else if(info.st_mode & S_IFDIR) return 1; else return 0;}
- enum SPNList {Openning, Prologue, FirstChapter, SecondChapter, ThirdChapter, FourthChapter, FifthChapter, SixthChapter, SeventhChapter, EighthChapter, NinthChapter, TenthChapter, LeeonRide};
+ enum SPNList {Openning, Prologue, FirstChapter, SecondChapter, ThirdChapter, FourthChapter, FifthChapter, SixthChapter, SeventhChapter, EighthChapter, NinthChapter, TenthChapter, LeeonRide, CostumStage01, CostumStage02, CostumStage03, CostumStage04, CostumStage05, CostumStage06, CostumStage07, CostumStage08};
  static std::map<std::string, SPNList> SPNLCheck;
  void SPNLInitalizing()
  {
@@ -247,7 +247,15 @@
   SPNLCheck["EighthChapter"] = EighthChapter;
   SPNLCheck["NinthChapter"] = NinthChapter;
   SPNLCheck["TenthChapter"] = TenthChapter;
-  SPNLCheck["LeeonRide"] = TenthChapter;
+  SPNLCheck["LeeonRide"] = LeeonRide;
+  SPNLCheck["CostumStage01"] = CostumStage01;
+  SPNLCheck["CostumStage02"] = CostumStage02;
+  SPNLCheck["CostumStage03"] = CostumStage03;
+  SPNLCheck["CostumStage04"] = CostumStage04;
+  SPNLCheck["CostumStage05"] = CostumStage05;
+  SPNLCheck["CostumStage06"] = CostumStage06;
+  SPNLCheck["CostumStage07"] = CostumStage07;
+  SPNLCheck["CostumStage08"] = CostumStage08;
  }
  void SPNLCReturn(std::string VarbSPNLCR)
  {
@@ -266,6 +274,14 @@
    case NinthChapter: strcat(VFPPath, "Story Version's Parts\\1 - Main Story\\10 - Ninth Chapter"); break;
    case TenthChapter: strcat(VFPPath, "Story Version's Parts\\1 - Main Story\\11 - Tenth Chapter"); break;
    case LeeonRide: strcat(VFPPath, "Story Version's Parts\\3 - Extras\\1 - Lee on Ride"); break;
+   case CostumStage01: strcat(VFPPath, "Story Version's Parts\\3 - Extras\\11 - Costum Stage 01"); break;
+   case CostumStage02: strcat(VFPPath, "Story Version's Parts\\3 - Extras\\12 - Costum Stage 02"); break;
+   case CostumStage03: strcat(VFPPath, "Story Version's Parts\\3 - Extras\\13 - Costum Stage 03"); break;
+   case CostumStage04: strcat(VFPPath, "Story Version's Parts\\3 - Extras\\14 - Costum Stage 04"); break;
+   case CostumStage05: strcat(VFPPath, "Story Version's Parts\\3 - Extras\\15 - Costum Stage 05"); break;
+   case CostumStage06: strcat(VFPPath, "Story Version's Parts\\3 - Extras\\16 - Costum Stage 06"); break;
+   case CostumStage07: strcat(VFPPath, "Story Version's Parts\\3 - Extras\\17 - Costum Stage 07"); break;
+   case CostumStage08: strcat(VFPPath, "Story Version's Parts\\3 - Extras\\18 - Costum Stage 08"); break;
    default: GetCurrentDirectory(MAX_PATH, VFPPath); for(size_t Varb929 = strlen(VFPPath) - 9; Varb929 < strlen(VFPPath); ++Varb929){VFPPath[Varb929] = '\0';} strcat(VFPPath, "\\Set-up\\Story Version\\Slots"); break;
   }
  }
