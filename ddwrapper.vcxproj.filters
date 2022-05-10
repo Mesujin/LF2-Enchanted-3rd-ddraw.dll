@@ -49,9 +49,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="angelscript.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="Includes\ddraw.h">
       <Filter>headers</Filter>
     </ClInclude>
@@ -79,19 +76,10 @@
     <ClInclude Include="Includes\stdafx.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\Add-on (by zort)\scriptarray\angelscript.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="Includes\Add-on (by zort)\scriptarray\scriptarray.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\Add-on (by zort)\scriptbuilder\angelscript.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="Includes\Add-on (by zort)\scriptbuilder\scriptbuilder.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Includes\Add-on (by zort)\scriptmath\angelscript.h">
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="Includes\Add-on (by zort)\scriptmath\scriptmath.h">
@@ -100,13 +88,7 @@
     <ClInclude Include="Includes\Add-on (by zort)\scriptmath\scriptmathcomplex.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\Add-on (by zort)\scriptmath3d\angelscript.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="Includes\Add-on (by zort)\scriptmath3d\scriptmath3d.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Includes\Add-on (by zort)\scriptstdstring\angelscript.h">
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="Includes\Add-on (by zort)\scriptstdstring\scriptstdstring.h">

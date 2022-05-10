@@ -43,7 +43,7 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debuhg\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Intermidate\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
@@ -59,7 +59,9 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ddraw</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ddraw</TargetName>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -123,6 +125,9 @@
       <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ddwrapper.cpp">
@@ -141,17 +146,11 @@
     <ClCompile Include="Includes\myIDDrawPalette.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="angelscript.h" />
-    <ClInclude Include="Includes\Add-on (by zort)\scriptarray\angelscript.h" />
     <ClInclude Include="Includes\Add-on (by zort)\scriptarray\scriptarray.h" />
-    <ClInclude Include="Includes\Add-on (by zort)\scriptbuilder\angelscript.h" />
     <ClInclude Include="Includes\Add-on (by zort)\scriptbuilder\scriptbuilder.h" />
-    <ClInclude Include="Includes\Add-on (by zort)\scriptmath3d\angelscript.h" />
     <ClInclude Include="Includes\Add-on (by zort)\scriptmath3d\scriptmath3d.h" />
-    <ClInclude Include="Includes\Add-on (by zort)\scriptmath\angelscript.h" />
     <ClInclude Include="Includes\Add-on (by zort)\scriptmath\scriptmath.h" />
     <ClInclude Include="Includes\Add-on (by zort)\scriptmath\scriptmathcomplex.h" />
-    <ClInclude Include="Includes\Add-on (by zort)\scriptstdstring\angelscript.h" />
     <ClInclude Include="Includes\Add-on (by zort)\scriptstdstring\scriptstdstring.h" />
     <ClInclude Include="Includes\ddraw.h" />
     <ClInclude Include="Includes\ddwrapper.h" />
