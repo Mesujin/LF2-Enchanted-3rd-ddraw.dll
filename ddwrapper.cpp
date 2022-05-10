@@ -289,9 +289,29 @@
  {
   char classicPath[MAX_PATH];
   char toPath[MAX_PATH];
+  std::string verChecking;
+
+  strcpy(classicPath, gamePath);
+  strcat(classicPath, "\\Set-up\\Base Database\\Database\\data\\23.as");
+  std::ifstream AInSystemRebuild(classicPath);
+  if(AInSystemRebuild.is_open())
+  {
+   strcpy(toPath, gamePath);
+   strcat(toPath, "\\data");
+   std::ofstream RebuildingAInSystem(toPath);
+
+   while(AInSystemRebuild){getline(AInSystemRebuild, verChecking); RebuildingAInSystem << verChecking << "\n"; if(verChecking.compare("//Main System") == 0) goto RebuildSystem;}
+   RebuildSystem:
+   while(AInSystemRebuild){AInSystemRebuild >> verChecking; if(verChecking.compare("//MainEnd") == 0) goto RebuildEnd; RebuildingAInSystem << verChecking;}
+   RebuildEnd:
+   RebuildingAInSystem << "\n//-//";
+
+   RebuildingAInSystem.close();
+   AInSystemRebuild.close();
+  }
+
   strcpy(classicPath, gamePath);
   strcat(classicPath, "\\Database\\ver.txt");
-  std::string verChecking;
   std::ifstream verCheck(classicPath);
   if(verCheck.is_open())
   {
@@ -316,9 +336,9 @@
  {
   char storyPath[MAX_PATH];
   char toPath[MAX_PATH];
+  std::string verChecking;
   strcpy(storyPath, gamePath);
   strcat(storyPath, "\\Database\\ver.txt");
-  std::string verChecking;
   std::ifstream verCheck(storyPath);
   if(verCheck.is_open())
   {
@@ -338,6 +358,25 @@
   std::ofstream verInit(storyPath);
   verInit << "story";
   verInit.close();
+
+  strcpy(storyPath, gamePath);
+  strcat(storyPath, "\\Set-up\\Base Database\\Database\\data\\23.as");
+  std::ifstream AInSystemRebuild(storyPath);
+  if(AInSystemRebuild.is_open())
+  {
+   strcpy(toPath, gamePath);
+   strcat(toPath, "\\data");
+   std::ofstream RebuildingAInSystem(toPath);
+
+   while(AInSystemRebuild){getline(AInSystemRebuild, verChecking); RebuildingAInSystem << verChecking << "\n"; if(verChecking.compare("//Main System") == 0) goto RebuildSystem;}
+   RebuildSystem:
+   while(AInSystemRebuild){AInSystemRebuild >> verChecking; if(verChecking.compare("//MainEnd") == 0) goto RebuildEnd; RebuildingAInSystem << verChecking;}
+   RebuildEnd:
+   RebuildingAInSystem << "\n//-//";
+
+   RebuildingAInSystem.close();
+   AInSystemRebuild.close();
+  }
  }
  void VersionControl()
  {
