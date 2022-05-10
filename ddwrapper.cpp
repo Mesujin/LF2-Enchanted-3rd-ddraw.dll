@@ -297,12 +297,13 @@
   if(AInSystemRebuild.is_open())
   {
    strcpy(toPath, gamePath);
-   strcat(toPath, "\\data");
+   strcat(toPath, "\\Database\\data\\23.as");
    std::ofstream RebuildingAInSystem(toPath);
+   char verCheckout[10000];
 
    while(AInSystemRebuild){getline(AInSystemRebuild, verChecking); RebuildingAInSystem << verChecking << "\n"; if(verChecking.compare("//Main System") == 0) goto RebuildSystem;}
    RebuildSystem:
-   while(AInSystemRebuild){AInSystemRebuild >> verChecking; if(verChecking.compare("//MainEnd") == 0) goto RebuildEnd; RebuildingAInSystem << verChecking;}
+   while(AInSystemRebuild){AInSystemRebuild >> verCheckout; if(strcmp(verCheckout, "//MainEnd") == 0) goto RebuildEnd; verChecking = verCheckout[0]; verChecking += verCheckout[1]; if(verChecking.compare("//") == 0) goto RebuildSystem; RebuildingAInSystem << verCheckout << " ";}
    RebuildEnd:
    RebuildingAInSystem << "\n//-//";
 
@@ -367,10 +368,11 @@
    strcpy(toPath, gamePath);
    strcat(toPath, "\\data");
    std::ofstream RebuildingAInSystem(toPath);
+   char verCheckout[10000];
 
    while(AInSystemRebuild){getline(AInSystemRebuild, verChecking); RebuildingAInSystem << verChecking << "\n"; if(verChecking.compare("//Main System") == 0) goto RebuildSystem;}
    RebuildSystem:
-   while(AInSystemRebuild){AInSystemRebuild >> verChecking; if(verChecking.compare("//MainEnd") == 0) goto RebuildEnd; RebuildingAInSystem << verChecking;}
+   while(AInSystemRebuild){AInSystemRebuild >> verCheckout; if(strcmp(verCheckout, "//MainEnd") == 0) goto RebuildEnd; verChecking = verCheckout[0]; verChecking += verCheckout[1]; if(verChecking.compare("//") == 0) goto RebuildSystem; RebuildingAInSystem << verChecking << " ";}
    RebuildEnd:
    RebuildingAInSystem << "\n//-//";
 
