@@ -14,87 +14,102 @@
     <ClCompile Include="ddwrapper.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="myIDDraw7.cpp">
+    <ClCompile Include="Includes\gamearrays.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="myIDDrawPalette.cpp">
+    <ClCompile Include="Includes\gameenums.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="add_on\scriptarray\scriptarray.cpp">
+    <ClCompile Include="Includes\myIDDraw7.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="add_on\scriptbuilder\scriptbuilder.cpp">
+    <ClCompile Include="Includes\myIDDrawPalette.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="add_on\scriptstdstring\scriptstdstring.cpp">
+    <ClCompile Include="Includes\Add-on (by zort)\scriptarray\scriptarray.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="add_on\scriptstdstring\scriptstdstring_utils.cpp">
+    <ClCompile Include="Includes\Add-on (by zort)\scriptbuilder\scriptbuilder.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="gamearrays.cpp">
+    <ClCompile Include="Includes\Add-on (by zort)\scriptmath\scriptmath.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="add_on\scriptmath\scriptmath.cpp">
+    <ClCompile Include="Includes\Add-on (by zort)\scriptmath\scriptmathcomplex.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="add_on\scriptmath\scriptmathcomplex.cpp">
+    <ClCompile Include="Includes\Add-on (by zort)\scriptmath3d\scriptmath3d.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="gameenums.cpp">
+    <ClCompile Include="Includes\Add-on (by zort)\scriptstdstring\scriptstdstring.cpp">
       <Filter>sources</Filter>
     </ClCompile>
-    <ClCompile Include="add_on\scriptmath3d\scriptmath3d.cpp">
+    <ClCompile Include="Includes\Add-on (by zort)\scriptstdstring\scriptstdstring_utils.cpp">
       <Filter>sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ddwrapper.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="myIDDraw.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="detours.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="add_on\scriptarray\scriptarray.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="add_on\scriptbuilder\scriptbuilder.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="add_on\scriptstdstring\scriptstdstring.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="sgame.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="gamearrays.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="add_on\scriptmath\scriptmath.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="add_on\scriptmath\scriptmathcomplex.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="gameenums.h">
-      <Filter>headers</Filter>
-    </ClInclude>
-    <ClInclude Include="add_on\scriptmath3d\scriptmath3d.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="angelscript.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="add_on\scriptarray\angelscript.h">
+    <ClInclude Include="Includes\ddraw.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="Includes\ddwrapper.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\detours.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\gamearrays.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\gameenums.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\myIDDraw.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\resource.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\sgame.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\stdafx.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Add-on (by zort)\scriptarray\angelscript.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Add-on (by zort)\scriptarray\scriptarray.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Add-on (by zort)\scriptbuilder\angelscript.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Add-on (by zort)\scriptbuilder\scriptbuilder.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Add-on (by zort)\scriptmath\angelscript.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Add-on (by zort)\scriptmath\scriptmath.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Add-on (by zort)\scriptmath\scriptmathcomplex.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Add-on (by zort)\scriptmath3d\angelscript.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Add-on (by zort)\scriptmath3d\scriptmath3d.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Add-on (by zort)\scriptstdstring\angelscript.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Add-on (by zort)\scriptstdstring\scriptstdstring.h">
       <Filter>headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -102,10 +117,5 @@
     <None Include="ddwrapper.def">
       <Filter>sources</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="ddwrapper.rc">
-      <Filter>sources</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

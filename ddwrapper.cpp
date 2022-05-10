@@ -45,16 +45,16 @@
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 //Includes
- #include "stdafx.h"
- #include "detours.h"
- #include "gameenums.h"
- #include "gamearrays.h"
- #include "add_on\scriptmath\scriptmath.h"
- #include "add_on\scriptmath\scriptmathcomplex.h"
- #include "add_on\scriptmath3d\scriptmath3d.h"
- #include "add_on\scriptarray\scriptarray.h"
- #include "add_on\scriptbuilder\scriptbuilder.h"
- #include "add_on\scriptstdstring\scriptstdstring.h"
+ #include "Includes\stdafx.h"
+ #include "Includes\detours.h"
+ #include "Includes\gameenums.h"
+ #include "Includes\gamearrays.h"
+ #include "Includes\Add-On (by zort)\scriptmath\scriptmath.h"
+ #include "Includes\Add-On (by zort)\scriptmath\scriptmathcomplex.h"
+ #include "Includes\Add-On (by zort)\scriptmath3d\scriptmath3d.h"
+ #include "Includes\Add-On (by zort)\scriptarray\scriptarray.h"
+ #include "Includes\Add-On (by zort)\scriptbuilder\scriptbuilder.h"
+ #include "Includes\Add-On (by zort)\scriptstdstring\scriptstdstring.h"
  #include <map>
  #include <string>
  #include <fstream>

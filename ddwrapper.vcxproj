@@ -43,7 +43,7 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debuhg\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
@@ -59,6 +59,7 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ddraw</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ddraw</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -124,42 +125,46 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="add_on\scriptarray\scriptarray.cpp" />
-    <ClCompile Include="add_on\scriptbuilder\scriptbuilder.cpp" />
-    <ClCompile Include="add_on\scriptmath3d\scriptmath3d.cpp" />
-    <ClCompile Include="add_on\scriptmath\scriptmath.cpp" />
-    <ClCompile Include="add_on\scriptmath\scriptmathcomplex.cpp" />
-    <ClCompile Include="add_on\scriptstdstring\scriptstdstring.cpp" />
-    <ClCompile Include="add_on\scriptstdstring\scriptstdstring_utils.cpp" />
-    <ClCompile Include="ddwrapper.cpp" />
-    <ClCompile Include="gamearrays.cpp" />
-    <ClCompile Include="gameenums.cpp" />
-    <ClCompile Include="myIDDraw7.cpp" />
-    <ClCompile Include="myIDDrawPalette.cpp" />
+    <ClCompile Include="ddwrapper.cpp">
+      <ScanSourceForModuleDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ClCompile Include="Includes\Add-on (by zort)\scriptarray\scriptarray.cpp" />
+    <ClCompile Include="Includes\Add-on (by zort)\scriptbuilder\scriptbuilder.cpp" />
+    <ClCompile Include="Includes\Add-on (by zort)\scriptmath3d\scriptmath3d.cpp" />
+    <ClCompile Include="Includes\Add-on (by zort)\scriptmath\scriptmath.cpp" />
+    <ClCompile Include="Includes\Add-on (by zort)\scriptmath\scriptmathcomplex.cpp" />
+    <ClCompile Include="Includes\Add-on (by zort)\scriptstdstring\scriptstdstring.cpp" />
+    <ClCompile Include="Includes\Add-on (by zort)\scriptstdstring\scriptstdstring_utils.cpp" />
+    <ClCompile Include="Includes\gamearrays.cpp" />
+    <ClCompile Include="Includes\gameenums.cpp" />
+    <ClCompile Include="Includes\myIDDraw7.cpp" />
+    <ClCompile Include="Includes\myIDDrawPalette.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="add_on\scriptarray\angelscript.h" />
-    <ClInclude Include="add_on\scriptarray\scriptarray.h" />
-    <ClInclude Include="add_on\scriptbuilder\scriptbuilder.h" />
-    <ClInclude Include="add_on\scriptmath3d\scriptmath3d.h" />
-    <ClInclude Include="add_on\scriptmath\scriptmath.h" />
-    <ClInclude Include="add_on\scriptmath\scriptmathcomplex.h" />
-    <ClInclude Include="add_on\scriptstdstring\scriptstdstring.h" />
     <ClInclude Include="angelscript.h" />
-    <ClInclude Include="ddwrapper.h" />
-    <ClInclude Include="detours.h" />
-    <ClInclude Include="gamearrays.h" />
-    <ClInclude Include="gameenums.h" />
-    <ClInclude Include="myIDDraw.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="sgame.h" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Includes\Add-on (by zort)\scriptarray\angelscript.h" />
+    <ClInclude Include="Includes\Add-on (by zort)\scriptarray\scriptarray.h" />
+    <ClInclude Include="Includes\Add-on (by zort)\scriptbuilder\angelscript.h" />
+    <ClInclude Include="Includes\Add-on (by zort)\scriptbuilder\scriptbuilder.h" />
+    <ClInclude Include="Includes\Add-on (by zort)\scriptmath3d\angelscript.h" />
+    <ClInclude Include="Includes\Add-on (by zort)\scriptmath3d\scriptmath3d.h" />
+    <ClInclude Include="Includes\Add-on (by zort)\scriptmath\angelscript.h" />
+    <ClInclude Include="Includes\Add-on (by zort)\scriptmath\scriptmath.h" />
+    <ClInclude Include="Includes\Add-on (by zort)\scriptmath\scriptmathcomplex.h" />
+    <ClInclude Include="Includes\Add-on (by zort)\scriptstdstring\angelscript.h" />
+    <ClInclude Include="Includes\Add-on (by zort)\scriptstdstring\scriptstdstring.h" />
+    <ClInclude Include="Includes\ddraw.h" />
+    <ClInclude Include="Includes\ddwrapper.h" />
+    <ClInclude Include="Includes\detours.h" />
+    <ClInclude Include="Includes\gamearrays.h" />
+    <ClInclude Include="Includes\gameenums.h" />
+    <ClInclude Include="Includes\myIDDraw.h" />
+    <ClInclude Include="Includes\resource.h" />
+    <ClInclude Include="Includes\sgame.h" />
+    <ClInclude Include="Includes\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ddwrapper.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="ddwrapper.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
