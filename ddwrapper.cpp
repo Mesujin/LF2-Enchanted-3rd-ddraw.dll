@@ -231,7 +231,7 @@
 
  bool mEsG = false;
  int dirExists(const char *path){struct stat info; if(stat(path, &info) != 0) return 0; else if(info.st_mode & S_IFDIR) return 1; else return 0;}
- enum SPNList {Openning, Prologue, FirstChapter, SecondChapter, ThirdChapter, FourthChapter, FifthChapter, SixthChapter, SeventhChapter, EighthChapter, NinthChapter, TenthChapter};
+ enum SPNList {Openning, Prologue, FirstChapter, SecondChapter, ThirdChapter, FourthChapter, FifthChapter, SixthChapter, SeventhChapter, EighthChapter, NinthChapter, TenthChapter, LeeonRide};
  static std::map<std::string, SPNList> SPNLCheck;
  void SPNLInitalizing()
  {
@@ -247,6 +247,7 @@
   SPNLCheck["EighthChapter"] = EighthChapter;
   SPNLCheck["NinthChapter"] = NinthChapter;
   SPNLCheck["TenthChapter"] = TenthChapter;
+  SPNLCheck["LeeonRide"] = TenthChapter;
  }
  void SPNLCReturn(std::string VarbSPNLCR)
  {
@@ -264,6 +265,7 @@
    case EighthChapter: strcat(VFPPath, "Story Version's Parts\\1 - Main Story\\9 - Eighth Chapter"); break;
    case NinthChapter: strcat(VFPPath, "Story Version's Parts\\1 - Main Story\\10 - Ninth Chapter"); break;
    case TenthChapter: strcat(VFPPath, "Story Version's Parts\\1 - Main Story\\11 - Tenth Chapter"); break;
+   case LeeonRide: strcat(VFPPath, "Story Version's Parts\\3 - Extras\\1 - Lee on Ride"); break;
    default: GetCurrentDirectory(MAX_PATH, VFPPath); for(size_t Varb929 = strlen(VFPPath) - 9; Varb929 < strlen(VFPPath); ++Varb929){VFPPath[Varb929] = '\0';} strcat(VFPPath, "\\Set-up\\Story Version\\Slots"); break;
   }
  }
@@ -434,7 +436,7 @@
   {
    VFCRemake:
    std::ofstream NVerData(VFPath);
-   NVerData << "=====================================================================================================\n                                   Little Fighter 2 Enchanted 3rd\n                                 A Modification of Little Fighter 2\n\n                                Version : 0.81.220923 - Release Ver.\n                          All rights belong to Marti Wong and Starsky Wong\n=====================================================================================================\n\n!-!-!-!-!-!-!-!-!-!- Only the Classic Version that was available in v0.81.220924 -!-!-!-!-!-!-!-!-!-!\n\n How to set-up the version :\n\n • Set To Classic Version\n   Simply change the name of the 'Version' in the \"Setting\" into \"Classic\".\n\n • Set To Story Version\n   Simply change the name of the 'Version' in the \"Setting\" into \"Story\". Plus set the 'Slot' with\n   the sub-stage that you're gonna play (LF2 has a limited memory, that's why it should be sparated),\n   just insert the name (make sure the lettercase are right) of the sub-stage without it's number,\n   see the example. You can see the list of the sub-stage inside \"Story Version's Parts\" folder in the\n   \"Set-up\" folder.\n\n =========Setting=========\n Version: Classic\n Slot1: Openning\n Slot2: First Chapter\n Slot3: none\n Slot4: none\n Slot5: none\n Slot6: none\n Slot7: none\n Slot8: none\n =========================\n\n If the game error while loading, try to not fulfill all the slots or remove some of the R-Series\n character (since some of the R-Series character cost alot of memory).\n Please do not cheating and play wisely, cheating the progress will just kill the fun of this mod.\n\n=============================================== Credits =============================================\n\n Original LF2 by Marti Wong & Starsky Wong\n Background Musics - BRS The Game's BGM\n Easier Data-Editor (STM93 Version) by Luigi600\n ddraw.dll for AI by Lord Silva(Boop), Som1Lse, zort, and everyone else who take an effort in it.\n Modded Executable(.exe) by darkfiren\n Some Cool Sprites => Little Fighter 2 neuer Stern by luminance\n Some Cool Sprites => LF2: Another Dimension by VicAdward\n Advice ; STM93 and ppl in LFE's Discord.\n\n More credits can be found in the Thread of this mod.\n | https://lf-empire.de/forum/showthread.php?tid=11058 |\n\n=====================================================================================================";
+   NVerData << "=====================================================================================================\n                                   Little Fighter 2 Enchanted 3rd\n                                 A Modification of Little Fighter 2\n\n                                Version : 0.81.220924 - Release Ver.\n                          All rights belong to Marti Wong and Starsky Wong\n=====================================================================================================\n\n!-!-!-!-!-!-!-!-!-!- Only the Classic Version that was available in v0.81.220924 -!-!-!-!-!-!-!-!-!-!\n\n How to set-up the version :\n\n • Set To Classic Version\n   Simply change the name of the 'Version' in the \"Setting\" into \"Classic\".\n\n • Set To Story Version\n   Simply change the name of the 'Version' in the \"Setting\" into \"Story\". Plus set the 'Slot' with\n   the sub-stage that you're gonna play (LF2 has a limited memory, that's why it should be sparated),\n   just insert the name (make sure the lettercase are right) of the sub-stage without it's number,\n   see the example. You can see the list of the sub-stage inside \"Story Version's Parts\" folder in the\n   \"Set-up\" folder.\n\n =========Setting=========\n Version: Classic\n Slot1: Openning\n Slot2: First Chapter\n Slot3: none\n Slot4: none\n Slot5: none\n Slot6: none\n Slot7: none\n Slot8: none\n =========================\n\n If the game error while loading, try to not fulfill all the slots or remove some of the R-Series\n character (since some of the R-Series character cost alot of memory).\n Please do not cheating and play wisely, cheating the progress will just kill the fun of this mod.\n\n=============================================== Credits =============================================\n\n Original LF2 by Marti Wong & Starsky Wong\n Background Musics - BRS The Game's BGM\n Easier Data-Editor (STM93 Version) by Luigi600\n ddraw.dll for AI by Lord Silva(Boop), Som1Lse, zort, and everyone else who take an effort in it.\n Modded Executable(.exe) by darkfiren\n Some Cool Sprites => Little Fighter 2 neuer Stern by luminance\n Some Cool Sprites => LF2: Another Dimension by VicAdward\n Advice ; STM93 and ppl in LFE's Discord.\n\n More credits can be found in the Thread of this mod.\n | https://lf-empire.de/forum/showthread.php?tid=11058 |\n\n=====================================================================================================";
    NVerData.close();
    goto VFCRetry;
   }
