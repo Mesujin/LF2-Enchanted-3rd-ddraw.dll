@@ -231,6 +231,47 @@
 
  bool mEsG = false;
  int dirExists(const char *path){struct stat info; if(stat(path, &info) != 0) return 0; else if(info.st_mode & S_IFDIR) return 1; else return 0;}
+ void RepackDatIntoData(char DFPath[], char NFPath[])
+ {
+  std::ifstream OldData(DFPath);
+  std::ofstream NewData(NFPath);
+  if(OldData.is_open() && NewData.is_open())
+  {
+   std::string RTexting;
+   std::string RTexting2;
+   int NTexting = 0;
+   int CenX = 0;
+   int CenY = 0;
+   int YAxisSingularity = 1000;
+   NewData << "# LF2 Enchanted Data Re-Generator by Mesujin # https://github.com/Mesujin #\n";
+   while(OldData){OldData >> RTexting; if(RTexting.compare("#Startl") == 0) goto ReTexting;}
+   ReTexting:
+   while(OldData)
+   {
+	OldData >> RTexting;
+	RTexting2 = *RTexting.begin(); if(RTexting2.compare("#") == 0)
+	{
+     if(RTexting.compare("#Call:Pic+140") == 0){NewData << "file(0-140): sprite\\Other\\none.bmp w: 1 h: 1 row: 1 col: 140 "; goto CommandFound;}
+	 if(RTexting.compare("#Call:PerfectBody") == 0){NewData << "bdy: kind: 0 x: " << CenX - 5 << " y: " << CenY - 10 << " w: 10 h: 10 bdy_end: "; goto CommandFound;}
+	 if(RTexting.compare("#Endl") == 0) goto TextEnd;
+	 CommandFound:
+	 goto ReTexting;
+	}
+	if(RTexting.compare("<frame>") == 0){CenX = 0; CenY = 0; goto TextFound;}
+	if(RTexting.compare("centerx:") == 0){NewData << RTexting << " "; OldData >> CenX; NewData << CenX << " "; goto ReTexting;}
+	if(RTexting.compare("centery:") == 0){NewData << RTexting << " "; OldData >> CenY; NewData << CenY - YAxisSingularity << " "; goto ReTexting;}
+	if(RTexting.compare("cpoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
+	if(RTexting.compare("wpoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
+	if(RTexting.compare("opoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
+	TextFound:
+	NewData << RTexting << " ";
+   }
+   TextEnd:
+   OldData.close();
+   NewData << "\n# ======================================================================= #";
+   NewData.close();
+  }
+ }
  enum SPNList {Openning, Prologue, FirstChapter, SecondChapter, ThirdChapter, FourthChapter, FifthChapter, SixthChapter, SeventhChapter, EighthChapter, NinthChapter, TenthChapter, LeeonRide, CostumStage01, CostumStage02, CostumStage03, CostumStage04, CostumStage05, CostumStage06, CostumStage07, CostumStage08};
  static std::map<std::string, SPNList> SPNLCheck;
  void SPNLInitalizing()
@@ -498,70 +539,6 @@
    goto VFCRetry;
   }
  }
- void RepackDatIntoData(char DFPath[], char NFPath[])
- {
-  std::ifstream OldData(DFPath);
-  std::ofstream NewData(NFPath);
-  if(OldData.is_open() && NewData.is_open())
-  {
-   std::string RTexting;
-   std::string RTexting2;
-   int NTexting;
-   int CenX = 0;
-   int CenY = 0;
-   NewData << "# LF2 Enchanted Data Re-Generator by Mesujin #\n";
-   while(OldData){OldData >> RTexting; if(RTexting.compare("#Startl") == 0) goto Retexting;}
-   Retexting:
-   while(OldData)
-   {
-	OldData >> RTexting;
-	RTexting2 = *RTexting.begin(); if(RTexting2.compare("#") == 0)
-	{
-	 if(RTexting.compare("#Call:PerfectBody") == 0){NewData << "bdy: kind: 0 x: "; NTexting = CenX - 5; NewData << NTexting << " y: "; NTexting = CenY - 10; NewData << NTexting << " w: 10 h: 10 bdy_end: ";}
-	 if(RTexting.compare("#Endl") == 0) goto TextEnd;
-	 goto Retexting;
-	}
-	if(RTexting.compare("centerx:") == 0)
-	{
-	 NewData << RTexting << " "; OldData >> CenX; NewData << CenX << " ";
-	} else
-	{
-	 if(RTexting.compare("centery:") == 0)
-	 {
-	  NewData << RTexting << " "; OldData >> CenY; NTexting = CenY - 1000; NewData << NTexting << " ";
-	 } else
-	 {
-	  if(RTexting.compare("cpoint:") == 0)
-	  {
-	   while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0) break;}
-	   NewData << RTexting << " "; OldData >> NTexting; NTexting -= 1000; NewData << NTexting << " ";
-	  } else
-	  {
-	   if(RTexting.compare("wpoint:") == 0)
-	   {
-	    while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0) break;}
-	    NewData << RTexting << " "; OldData >> NTexting; NTexting -= 1000; NewData << NTexting << " ";
-	   } else
-	   {
-	    if (RTexting.compare("opoint:") == 0)
-	    {
-	 	 while(OldData){NewData << RTexting << " "; OldData >> RTexting; if (RTexting.compare("y:") == 0) break;}
- 		 NewData << RTexting << " "; OldData >> NTexting; NTexting -= 1000; NewData << NTexting << " ";
-	    } else
-	    {
-	 	 NewData << RTexting << " ";
-	    }
-	   }
-	  }
-     }
-    }
-   }
-   TextEnd:
-   OldData.close();
-   NewData << "\n# ========================================== #";
-   NewData.close();
-  }
- }
  void StartDataControl()
  {
   char gamePath[MAX_PATH];
@@ -697,7 +674,7 @@
   if(NumberOfDatas < 10){strcat(DataPath, "0"); NData << "0";}
   if(NumberOfDatas < 100){strcat(DataPath, "0"); NData << "0";}
   strcat(DataPath, std::to_string(NumberOfDatas).c_str()); NData << NumberOfDatas;
-  strcat(DataPath, ".txt"); NData << ".txt\n";
+  strcat(DataPath, ".data"); NData << ".data\n";
   char RDID[MAX_PATH];
   strcpy(RDID, RText.c_str());
   RepackDatIntoData(RDID, DataPath);
