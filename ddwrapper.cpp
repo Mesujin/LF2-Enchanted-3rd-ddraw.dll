@@ -65,7 +65,8 @@
  #include <direct.h>
  #include <string.h>
  #include <stdlib.h>
- #include <windows.h>
+ #include <Windows.h>
+ #include <WinUser.h>
  #include <varargs.h>
  #include <sys/stat.h>
  #include <shlobj_core.h>
@@ -251,6 +252,7 @@
 	OldData >> RTexting;
 	RTexting2 = *RTexting.begin(); if(RTexting2.compare("#") == 0)
 	{
+	 if(RTexting.compare("##") == 0 ){getline(OldData, RTexting); goto CommandFound;}
      if(RTexting.compare("#Call:Pic+140") == 0){NewData << "file(0-140): sprite\\Other\\none.bmp w: 1 h: 1 row: 1 col: 140 "; goto CommandFound;}
 	 if(RTexting.compare("#Call:PerfectBody") == 0){NewData << "bdy: kind: 0 x: " << CenX - 5 << " y: " << CenY - 10 << " w: 10 h: 10 bdy_end: "; goto CommandFound;}
 	 if(RTexting.compare("#Endl") == 0) goto TextEnd;
@@ -344,7 +346,7 @@
 
    while(AInSystemRebuild){getline(AInSystemRebuild, verChecking); RebuildingAInSystem << verChecking << "\n"; if(verChecking.compare("//Main System") == 0) goto RebuildSystem;}
    RebuildSystem:
-   while(AInSystemRebuild){AInSystemRebuild >> verCheckout; if(strcmp(verCheckout, "//MainEnd") == 0) goto RebuildEnd; verChecking = verCheckout[0]; verChecking += verCheckout[1]; if(verChecking.compare("//") == 0) goto RebuildSystem; RebuildingAInSystem << verCheckout << " ";}
+   while(AInSystemRebuild){AInSystemRebuild >> verCheckout; if(strcmp(verCheckout, "//MainEnd") == 0) goto RebuildEnd; verChecking = verCheckout[0]; verChecking += verCheckout[1]; if(verChecking.compare("//") == 0){getline(AInSystemRebuild, verChecking); goto RebuildSystem;} RebuildingAInSystem << verCheckout << " ";}
    RebuildEnd:
    RebuildingAInSystem << "\n//-//";
 
@@ -826,6 +828,18 @@
   }
   return 0;
  }
+ /////////////////////////////
+
+ /////////////////////////////
+ void LoadingImg(bool Typen)
+ {
+  if(Typen)
+  {
+  } else
+  {
+  
+  }
+ }
 //-//
 
 //Functions
@@ -928,7 +942,7 @@
   if(!FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten)) return;
   SetConsoleCursorPosition(hConsole,coordScreen);
  }
- void printOut(){std::string PrintText; std::string PrintText2; std::ifstream PrintLog("Log.txt"); if(PrintLog.is_open()){while(PrintLog){getline(PrintLog, PrintText2); PrintText += PrintText2; PrintText += "\n";} printf(PrintText.c_str()); PrintLog.close();} std::ofstream ResetLog; ResetLog.open("Log.txt"); ResetLog << ""; ResetLog.close();}
+ void printOut(){std::string PrintText; std::string PrintText2; std::ifstream PrintLog("Log.txt"); if(PrintLog.is_open()){while(PrintLog){getline(PrintLog, PrintText2); PrintText += PrintText2; PrintText += "\n";} printf("%s", PrintText.c_str()); PrintLog.close();} std::ofstream ResetLog("Log.txt"); ResetLog << ""; ResetLog.close();}
  void print(bool p)
  {
   std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
@@ -1244,9 +1258,8 @@
   {
    mov dword ptr ds:[unkwn2], ecx;
   }
-  int id_int = game->objects[object_num]->data->id;
   std::string fileName = getFileName();
-  rebuildIfUpdated(id_int, fileName);
+  rebuildIfUpdated(23, fileName);
   ScriptModule = ScriptEngine->GetModule(getModuleName(fileName).c_str());
   if(ScriptModule)
   {
@@ -1550,10 +1563,9 @@
   HANDLE hFind;
   WIN32_FIND_DATA FindFileData;
   char DirPath[MAX_PATH] = "data\\23.as";
-  char FileName[MAX_PATH] = "data\\";
+  char FileName[MAX_PATH] = "data\\23.as";
   hFind = FindFirstFile(DirPath, &FindFileData);
   if(hFind == INVALID_HANDLE_VALUE) return;
-  strcpy(DirPath, FileName);
   do {
 	  strcpy(FileName, DirPath);
 	  strcat(FileName, FindFileData.cFileName);
@@ -1607,8 +1619,10 @@
   {
    case DLL_PROCESS_ATTACH:
     startup();
+	LoadingImg(true);
     VersionControl();
     StartDataControl();
+	LoadingImg(false);
     InitInstance(hModule);
    break;
    case DLL_PROCESS_DETACH:
