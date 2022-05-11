@@ -1,4 +1,4 @@
-# lf2-ai-scriptengine
+# LF2 AI ScriptEngine | LF2 Enchanted 3rd's ddraw.dll
 
 A modification of ddraw.dll that used to inject an AI to the game, Little Fighter 2;
 
