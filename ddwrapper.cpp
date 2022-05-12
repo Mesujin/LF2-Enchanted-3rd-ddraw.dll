@@ -104,6 +104,10 @@
  DWORD cCharsWritten;
  CONSOLE_SCREEN_BUFFER_INFO csbi;
  DWORD dwConSize;
+ CONSOLE_SCREEN_BUFFER_INFOEX consolesize;
+ CONSOLE_SCREEN_BUFFER_INFOEX consolesize2;
+ COORD cordResize;
+ COORD cordResize2;
 //-//
 
 //Info
@@ -842,9 +846,28 @@
  {
   if(Typen)
   {
+   AllocConsole();
+   hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+   freopen("CONOUT$", "wb", stdout); // reopen stout handle as console window output
+   consolesize.cbSize=sizeof(consolesize);
+   GetConsoleScreenBufferInfoEx(hConsole, &consolesize);
+   cordResize.X = 44;
+   cordResize.Y = 6;
+   consolesize.dwSize = cordResize;
+   consolesize.srWindow.Left = 0;
+   consolesize.srWindow.Right = 44;
+   consolesize.srWindow.Top = 0;
+   consolesize.srWindow.Bottom = 6;
+   SetConsoleScreenBufferInfoEx(hConsole, &consolesize);
+   SetConsoleScreenBufferSize(hConsole, {42, 6});
+   SetConsoleTitleA("LF2 Enchanted 3rd - Loading");
+   printf(" |========================================|\n\n  Loading data...\n  Please wait, this should take a moment.\n\n |========================================|");
   } else
   {
-  
+   #ifdef DEBUG_VERSION
+   #else
+    FreeConsole();
+   #endif
   }
  }
 //-//
@@ -1569,10 +1592,40 @@
  void startup()
  {
   #ifdef DEBUG_VERSION
+   printOut();
+   printf("                                                                                                                                                                                                                                                                        ");
+   FreeConsole();
    AllocConsole();
+   hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
    freopen("CONIN$", "rb", stdin);   // reopen stdin handle as console window input
    freopen("CONOUT$", "wb", stdout); // reopen stout handle as console window output
    freopen("CONOUT$", "wb", stderr); // reopen stderr handle as console window output
+   std::ifstream FindBufferSize("data\\23.as");
+   std::string DumpString;
+   short BufferSize = 60;
+   if(FindBufferSize.is_open()){while(FindBufferSize){FindBufferSize >> DumpString; if(DumpString.compare("ConsoleBuffer") == 0){FindBufferSize >> DumpString; FindBufferSize >> BufferSize; goto FoundIt;}} FindBufferSize.close();}
+   FoundIt:
+   if(FindBufferSize.is_open()) FindBufferSize.close();
+   switch(BufferSize)
+   {
+    case 60: break;
+	case 80: break;
+	case 100: break;
+	case 120: break;
+    default: BufferSize = 100; break;
+   }
+   consolesize2.cbSize=sizeof(consolesize2);
+   GetConsoleScreenBufferInfoEx(hConsole, &consolesize2);
+   cordResize2.X = BufferSize;
+   cordResize2.Y = 40;
+   consolesize2.dwSize = cordResize2;
+   consolesize2.srWindow.Left = 0;
+   consolesize2.srWindow.Right = BufferSize;
+   consolesize2.srWindow.Top = 0;
+   consolesize2.srWindow.Bottom = 40;
+   SetConsoleScreenBufferInfoEx(hConsole, &consolesize2);
+   SetConsoleScreenBufferSize(hConsole, {BufferSize, 9000});
+   SetConsoleTitleA("Windows Console API - LF2 Enchanted 3rd's Debug Console - Refined by Mesujin");
   #endif
   ScriptModule = NULL;
   ScriptEngine = asCreateScriptEngine(ANGELSCRIPT_VERSION);
@@ -1642,14 +1695,13 @@
   switch (ul_reason_for_call)
   {
    case DLL_PROCESS_ATTACH:
-    startup();
 	printLogClear();
 	LoadingImg(true);
     VersionControl();
     StartDataControl();
 	LoadingImg(false);
+    startup();
     InitInstance(hModule);
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
    break;
    case DLL_PROCESS_DETACH:
 	cleanup();
