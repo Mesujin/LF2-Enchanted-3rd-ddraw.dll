@@ -934,6 +934,7 @@
  void Control_PrePhase(int agi)    {*(int*)0x44f880 = agi;}
 
  void printAddr(void *Addr){printf("%p", Addr);}
+ void printLogClear(){std::ofstream ResetLog("log.txt"); ResetLog << ""; ResetLog.close();}
  void printReset()
  {
   if(hConsole == INVALID_HANDLE_VALUE) return;
@@ -1387,6 +1388,7 @@
   ScriptEngine->RegisterGlobalFunction("void Control_BGy(int vit, int agi)", asFUNCTION(Control_BGy), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void Control_BGh(int vit, int agi)", asFUNCTION(Control_BGh), asCALL_CDECL);
   
+  ScriptEngine->RegisterGlobalFunction("void printLogClear()", asFUNCTION(printLogClear), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void printOut()", asFUNCTION(printOut), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void print(bool p)", asFUNCTIONPR(print, (bool p), void), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void print(int8 p)", asFUNCTIONPR(print, (char p), void), asCALL_CDECL);
