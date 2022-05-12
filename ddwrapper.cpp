@@ -50,10 +50,10 @@
  #include "Includes\gameenums.h"
  #include "Includes\gamearrays.h"
  #include "Includes\Add-On (by zort)\scriptmath\scriptmath.h"
- #include "Includes\Add-On (by zort)\scriptmath\scriptmathcomplex.h"
- #include "Includes\Add-On (by zort)\scriptmath3d\scriptmath3d.h"
  #include "Includes\Add-On (by zort)\scriptarray\scriptarray.h"
+ #include "Includes\Add-On (by zort)\scriptmath3d\scriptmath3d.h"
  #include "Includes\Add-On (by zort)\scriptbuilder\scriptbuilder.h"
+ #include "Includes\Add-On (by zort)\scriptmath\scriptmathcomplex.h"
  #include "Includes\Add-On (by zort)\scriptstdstring\scriptstdstring.h"
  #include <map>
  #include <string>
@@ -96,7 +96,14 @@
  int current_stage;
  char stage_clear;
  char VFPPath[MAX_PATH];
+ unsigned int log_length[100];
+ int log_Redudantcy;
  sGame* game = (sGame*)0x458b00;
+ HANDLE hConsole;
+ COORD coordScreen = {0, 0};
+ DWORD cCharsWritten;
+ CONSOLE_SCREEN_BUFFER_INFO csbi;
+ DWORD dwConSize;
 //-//
 
 //Info
@@ -927,91 +934,107 @@
  void Control_PrePhase(int agi)    {*(int*)0x44f880 = agi;}
 
  void printAddr(void *Addr){printf("%p", Addr);}
- void printClear()
+ void printReset()
  {
-  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
   if(hConsole == INVALID_HANDLE_VALUE) return;
-  COORD coordScreen = {0,0};
-  DWORD cCharsWritten;
-  CONSOLE_SCREEN_BUFFER_INFO csbi;
-  DWORD dwConSize;
-  if(!GetConsoleScreenBufferInfo(hConsole, &csbi)) return;
-  dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
-  if(!FillConsoleOutputCharacter(hConsole, ' ', dwConSize, coordScreen, &cCharsWritten)) return;
-  if(!GetConsoleScreenBufferInfo(hConsole, &csbi)) return;
-  if(!FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten)) return;
-  SetConsoleCursorPosition(hConsole,coordScreen);
+  GetConsoleScreenBufferInfo(hConsole, &csbi);
+  FillConsoleOutputAttribute(hConsole, csbi.wAttributes, csbi.dwSize.X * csbi.dwSize.Y, coordScreen, &cCharsWritten);
+  SetConsoleCursorPosition(hConsole, coordScreen);
  }
- void printOut(){std::string PrintText; std::string PrintText2; std::ifstream PrintLog("Log.txt"); if(PrintLog.is_open()){while(PrintLog){getline(PrintLog, PrintText2); PrintText += PrintText2; PrintText += "\n";} printf("%s", PrintText.c_str()); PrintLog.close();} std::ofstream ResetLog("Log.txt"); ResetLog << ""; ResetLog.close();}
+ void printOut()
+ {
+  std::string PrintText; std::string PrePrintText; std::ifstream PrintLog("log.txt"); bool NewLine = false;
+  if(PrintLog.is_open())
+  {
+   int Redudantcy = -1;
+   while(PrintLog)
+   {
+    Redudantcy += 1; if(NewLine) PrintText += "\n"; NewLine = true;
+	PrePrintText = ""; getline(PrintLog, PrePrintText); PrintText.append(PrePrintText, 0, PrePrintText.length());
+	unsigned int OldTextLength = PrintText.length();
+	if(OldTextLength > log_length[Redudantcy]) log_length[Redudantcy] = OldTextLength;
+	for(unsigned int repulish = 1; repulish <= log_length[Redudantcy] - OldTextLength; ++repulish) PrintText += " ";
+	log_length[Redudantcy] = OldTextLength;
+   }
+   if(Redudantcy > log_Redudantcy) log_Redudantcy = Redudantcy;
+   for(int fullrepulish = 1; fullrepulish < log_Redudantcy - Redudantcy; ++fullrepulish)
+   {
+	Redudantcy += 1; if(NewLine) PrintText += "\n"; NewLine = true;
+	for(unsigned int repulish = 1; repulish <= log_length[Redudantcy]; ++repulish) PrintText += " ";
+   }
+   printReset(); printf("%s", PrintText.c_str()); PrintLog.close();
+  }
+  std::ofstream ResetLog("log.txt"); ResetLog << ""; ResetLog.close();
+ }
  void print(bool p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   if(p){PrintLog << "true";} else {PrintLog << "false";}
   PrintLog.close();
  }
  void print(char p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   PrintLog << p;
   PrintLog.close();
  }
  void print(short p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   PrintLog << p;
   PrintLog.close();
  }
  void print(int p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   PrintLog << p;
   PrintLog.close();
  }
  void print(long long p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   PrintLog << p;
   PrintLog.close();
  }
  void print(unsigned char p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   PrintLog << p;
   PrintLog.close();
  }
  void print(unsigned short p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   PrintLog << p;
   PrintLog.close();
  }
  void print(unsigned int p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   PrintLog << p;
   PrintLog.close();
  }
  void print(unsigned long long p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   PrintLog << p;
   PrintLog.close();
  }
  void print(double p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   PrintLog << p;
   PrintLog.close();
  }
  void print(float p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   PrintLog << p;
   PrintLog.close();
  }
  void print(const std::string &p)
  {
-  std::ofstream PrintLog; PrintLog.open("Log.txt", std::ofstream::app);
+  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
   PrintLog << p;
   PrintLog.close();
  }
@@ -1364,7 +1387,6 @@
   ScriptEngine->RegisterGlobalFunction("void Control_BGy(int vit, int agi)", asFUNCTION(Control_BGy), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void Control_BGh(int vit, int agi)", asFUNCTION(Control_BGh), asCALL_CDECL);
   
-  ScriptEngine->RegisterGlobalFunction("void printClear()", asFUNCTION(printClear), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void printOut()", asFUNCTION(printOut), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void print(bool p)", asFUNCTIONPR(print, (bool p), void), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void print(int8 p)", asFUNCTIONPR(print, (char p), void), asCALL_CDECL);
@@ -1547,7 +1569,7 @@
   #ifdef DEBUG_VERSION
    AllocConsole();
    freopen("CONIN$", "rb", stdin);   // reopen stdin handle as console window input
-   freopen("CONOUT$", "wb", stdout);  // reopen stout handle as console window output
+   freopen("CONOUT$", "wb", stdout); // reopen stout handle as console window output
    freopen("CONOUT$", "wb", stderr); // reopen stderr handle as console window output
   #endif
   ScriptModule = NULL;
@@ -1624,6 +1646,7 @@
     StartDataControl();
 	LoadingImg(false);
     InitInstance(hModule);
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
    break;
    case DLL_PROCESS_DETACH:
 	cleanup();
@@ -1662,10 +1685,10 @@
  void LoadOriginalDll(void)
  {
   char buffer[MAX_PATH];
-  ::GetSystemDirectory(buffer, MAX_PATH); //Getting path to system dir and to d3d9.dll.
-  strcat(buffer, "\\ddraw.dll"); //Append dll name.
+  ::GetSystemDirectory(buffer, MAX_PATH);                       //Getting path to system dir and to d3d9.dll.
+  strcat(buffer, "\\ddraw.dll");                                //Append dll name.
   if(!gl_hOriginalDll) gl_hOriginalDll = ::LoadLibrary(buffer);
-  if(!gl_hOriginalDll){::ExitProcess(0);} //Debug - Exit the hard way.
+  if(!gl_hOriginalDll){::ExitProcess(0);}                       //Debug - Exit the hard way.
  }
  void ExitInstance()
  {
