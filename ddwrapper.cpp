@@ -850,6 +850,7 @@
    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
    freopen("CONOUT$", "wb", stdout); // reopen stout handle as console window output
    consolesize.cbSize=sizeof(consolesize);
+   SetConsoleScreenBufferSize(hConsole, {42, 6});
    GetConsoleScreenBufferInfoEx(hConsole, &consolesize);
    cordResize.X = 44;
    cordResize.Y = 6;
@@ -866,6 +867,8 @@
   {
    #ifdef DEBUG_VERSION
    #else
+	auto myConsole = GetConsoleWindow();
+    ShowWindow(myConsole, 0);
     FreeConsole();
    #endif
   }
@@ -1614,16 +1617,17 @@
 	case 120: break;
     default: BufferSize = 100; break;
    }
-   consolesize2.cbSize=sizeof(consolesize2);
-   GetConsoleScreenBufferInfoEx(hConsole, &consolesize2);
-   cordResize2.X = BufferSize;
-   cordResize2.Y = 40;
-   consolesize2.dwSize = cordResize2;
-   consolesize2.srWindow.Left = 0;
-   consolesize2.srWindow.Right = BufferSize;
-   consolesize2.srWindow.Top = 0;
-   consolesize2.srWindow.Bottom = 40;
-   SetConsoleScreenBufferInfoEx(hConsole, &consolesize2);
+   SetConsoleScreenBufferSize(hConsole, {BufferSize, 9000});
+   GetConsoleScreenBufferInfoEx(hConsole, &consolesize);
+   consolesize.cbSize = sizeof(consolesize);
+   cordResize.X = BufferSize;
+   cordResize.Y = BufferSize / 2;
+   consolesize.dwSize = cordResize;
+   consolesize.srWindow.Left = 0;
+   consolesize.srWindow.Right = BufferSize;
+   consolesize.srWindow.Top = 0;
+   consolesize.srWindow.Bottom = BufferSize / 2;
+   SetConsoleScreenBufferInfoEx(hConsole, &consolesize);
    SetConsoleScreenBufferSize(hConsole, {BufferSize, 9000});
    SetConsoleTitleA("Windows Console API - LF2 Enchanted 3rd's Debug Console - Refined by Mesujin");
   #endif
