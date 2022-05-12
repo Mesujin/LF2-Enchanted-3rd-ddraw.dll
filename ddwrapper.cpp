@@ -1643,6 +1643,7 @@
   {
    case DLL_PROCESS_ATTACH:
     startup();
+	printLogClear();
 	LoadingImg(true);
     VersionControl();
     StartDataControl();
@@ -1652,6 +1653,7 @@
    break;
    case DLL_PROCESS_DETACH:
 	cleanup();
+	printLogClear();
 	ExitInstance();
    break;
    case DLL_THREAD_ATTACH: break;
