@@ -251,11 +251,12 @@
   {
    std::string RTexting;
    std::string RTexting2;
+   bool CompMode;
    int NTexting = 0;
    int CenX = 0;
    int CenY = 0;
    int YAxisSingularity = 1000;
-   NewData << "# LF2 Enchanted Data Re-Generator by Mesujin # https://github.com/Mesujin #\n";
+   NewData << "# LF2 Enchanted 3rd Data Re-Generator by Mesujin # https://github.com/Mesujin #\n";
    while(OldData){OldData >> RTexting; if(RTexting.compare("#Startl") == 0) goto ReTexting;}
    ReTexting:
    while(OldData)
@@ -270,18 +271,43 @@
 	 CommandFound:
 	 goto ReTexting;
 	}
-	if(RTexting.compare("<frame>") == 0){CenX = 0; CenY = 0; goto TextFound;}
-	if(RTexting.compare("centerx:") == 0){NewData << RTexting << " "; OldData >> CenX; NewData << CenX << " "; goto ReTexting;}
-	if(RTexting.compare("centery:") == 0){NewData << RTexting << " "; OldData >> CenY; NewData << CenY - YAxisSingularity << " "; goto ReTexting;}
-	if(RTexting.compare("cpoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
-	if(RTexting.compare("wpoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
-	if(RTexting.compare("opoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
-	TextFound:
+	if(RTexting.compare("<bmp_begin>") == 0) CompMode = true;
+	if(RTexting.compare("<bmp_end>") == 0) CompMode = false;
+	if(CompMode)
+	{
+	 if(RTexting.compare("max_hp:") == 0){RTexting = "dash_height"; goto TextFound;}
+	 if(RTexting.compare("movement_speed:") == 0){RTexting = "walking_speed"; goto TextFound;}
+	 if(RTexting.compare("weight:") == 0){RTexting = "walking_speedz"; goto TextFound;}
+	 if(RTexting.compare("speciality_01:") == 0){RTexting = "walking_frame_rate"; goto TextFound;}
+	 if(RTexting.compare("speciality_02:") == 0){RTexting = "running_frame_rate"; goto TextFound;}
+	 if(RTexting.compare("speciality_03:") == 0){RTexting = "running_speed"; goto TextFound;}
+	 if(RTexting.compare("speciality_04:") == 0){RTexting = "running_speedz"; goto TextFound;}
+	 if(RTexting.compare("speciality_05:") == 0){RTexting = "heavy_walking_speed"; goto TextFound;}
+	 if(RTexting.compare("speciality_06:") == 0){RTexting = "heavy_walking_speedz"; goto TextFound;}
+	 if(RTexting.compare("speciality_07:") == 0){RTexting = "heavy_running_speed"; goto TextFound;}
+	 if(RTexting.compare("speciality_08:") == 0){RTexting = "heavy_running_speedz"; goto TextFound;}
+	 if(RTexting.compare("speciality_09:") == 0){RTexting = "jump_height"; goto TextFound;}
+	 if(RTexting.compare("speciality_10:") == 0){RTexting = "jump_distance"; goto TextFound;}
+	 if(RTexting.compare("speciality_11:") == 0){RTexting = "jump_distancez"; goto TextFound;}
+	 if(RTexting.compare("speciality_12:") == 0){RTexting = "dash_distance"; goto TextFound;}
+	 if(RTexting.compare("speciality_13:") == 0){RTexting = "dash_distancez"; goto TextFound;}
+	 if(RTexting.compare("speciality_14:") == 0){RTexting = "rowing_height"; goto TextFound;}
+	 if(RTexting.compare("speciality_15:") == 0){RTexting = "rowing_distance"; goto TextFound;}
+	} else
+	{
+	 if(RTexting.compare("<frame>") == 0){CenX = 0; CenY = 0; goto TextFound;}
+	 if(RTexting.compare("centerx:") == 0){NewData << RTexting << " "; OldData >> CenX; NewData << CenX << " "; goto ReTexting;}
+	 if(RTexting.compare("centery:") == 0){NewData << RTexting << " "; OldData >> CenY; NewData << CenY - YAxisSingularity << " "; goto ReTexting;}
+	 if(RTexting.compare("cpoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
+	 if(RTexting.compare("wpoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
+	 if(RTexting.compare("opoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
+	}
+    TextFound:
 	NewData << RTexting << " ";
    }
    TextEnd:
    OldData.close();
-   NewData << "\n# ======================================================================= #";
+   NewData << "\n# =========================================================================== #";
    NewData.close();
   }
  }
