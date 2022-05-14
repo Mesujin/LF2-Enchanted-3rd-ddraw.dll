@@ -265,8 +265,8 @@
 	RTexting2 = *RTexting.begin(); if(RTexting2.compare("#") == 0)
 	{
 	 if(RTexting.compare("##") == 0 ){getline(OldData, RTexting); goto CommandFound;}
-     if(RTexting.compare("#Call:Pic+140") == 0){NewData << "file(0-140): sprite\\Other\\none.bmp w: 1 h: 1 row: 1 col: 140 "; goto CommandFound;}
-	 if(RTexting.compare("#Call:PerfectBody") == 0){NewData << "bdy: kind: 0 x: " << CenX - 5 << " y: " << CenY - 10 << " w: 10 h: 10 bdy_end: "; goto CommandFound;}
+     if(RTexting.compare("#C:Pic+140") == 0){NewData << "file(0-140): sprite\\Other\\none.bmp w: 1 h: 1 row: 1 col: 140 "; goto CommandFound;}
+	 if(RTexting.compare("#C:PerfectBdy") == 0){NewData << "bdy: kind: 0 x: " << CenX - 5 << " y: " << CenY - 10 << " w: 10 h: 10 bdy_end: "; goto CommandFound;}
 	 if(RTexting.compare("#Endl") == 0) goto TextEnd;
 	 CommandFound:
 	 goto ReTexting;
