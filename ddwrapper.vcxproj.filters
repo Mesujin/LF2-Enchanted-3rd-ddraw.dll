@@ -94,6 +94,9 @@
     <ClInclude Include="Includes\Add-on (by zort)\scriptstdstring\scriptstdstring.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="Includes\bmpgenerate.h">
+      <Filter>headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ddwrapper.def">

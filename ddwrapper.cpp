@@ -74,40 +74,46 @@
 
 //Global Variables
  #pragma data_seg (".ddraw_shared")
- HINSTANCE           gl_hOriginalDll;
- HINSTANCE           gl_hThisInstance;
+  HINSTANCE gl_hOriginalDll;
+  HINSTANCE gl_hThisInstance;
  #pragma data_seg ()
 //-//
 
 //Variables
  namespace fs = std::filesystem;
- char PlayerName[15] = "Mesujin";
- int GameData[300];
+ //Shared
+  int GameData[300];
+  char PlayerName[15];
+ //-//
  int mode;
- int difficulty;
- int elapsed_time;
- int background = -1;
  int bg_width;
+ int log_CLine;
  int bg_zwidth1;
  int bg_zwidth2;
+ int difficulty;
  int stage_bound;
+ int elapsed_time;
  int current_phase;
- int current_phase_count;
  int current_stage;
+ int background = -1;
+ int current_phase_count;
  char stage_clear;
  char VFPPath[MAX_PATH];
+ short BufferSize;
  unsigned int log_length[100];
- int log_Redudantcy;
+
  sGame* game = (sGame*)0x458b00;
- HANDLE hConsole;
- COORD coordScreen = {0, 0};
- DWORD cCharsWritten;
- CONSOLE_SCREEN_BUFFER_INFO csbi;
  DWORD dwConSize;
- CONSOLE_SCREEN_BUFFER_INFOEX consolesize;
- CONSOLE_SCREEN_BUFFER_INFOEX consolesize2;
+ DWORD cCharsWritten;
  COORD cordResize;
  COORD cordResize2;
+ COORD coordScreen = {0, 0};
+ HANDLE hConsole;
+ CONSOLE_SCREEN_BUFFER_INFO csbi;
+ CONSOLE_SCREEN_BUFFER_INFOEX consolesize;
+ CONSOLE_SCREEN_BUFFER_INFOEX consolesize2;
+
+ std::string Log_Console;
 //-//
 
 //Info
@@ -251,7 +257,7 @@
   {
    std::string RTexting;
    std::string RTexting2;
-   bool CompMode;
+   bool CompMode = true;
    int NTexting = 0;
    int CenX = 0;
    int CenY = 0;
@@ -986,111 +992,69 @@
  void Control_PrePhase(int agi)    {*(int*)0x44f880 = agi;}
 
  void printAddr(void *Addr){printf("%p", Addr);}
- void printLogClear(){std::ofstream ResetLog("log.txt"); ResetLog << ""; ResetLog.close();}
+ void printLogClear(){std::ofstream LogClear("log.txt"); LogClear << ""; LogClear.close(); Log_Console = "";}
  void printReset()
  {
-  if(hConsole == INVALID_HANDLE_VALUE) return;
   GetConsoleScreenBufferInfo(hConsole, &csbi);
   FillConsoleOutputAttribute(hConsole, csbi.wAttributes, csbi.dwSize.X * csbi.dwSize.Y, coordScreen, &cCharsWritten);
   SetConsoleCursorPosition(hConsole, coordScreen);
  }
  void printOut()
  {
-  std::string PrintText; std::string PrePrintText; std::ifstream PrintLog("log.txt"); bool NewLine = false;
-  if(PrintLog.is_open())
+  if(hConsole == INVALID_HANDLE_VALUE) return;
+  bool CLining = false;
+  std::string CoutString;
+  std::string CoutStringBeta;
+  std::ofstream BetaOut("log.txt");
+  BetaOut << Log_Console;
+  BetaOut.close();
+  std::ifstream BetaIn("log.txt");
+  if(BetaIn.is_open())
   {
-   int Redudantcy = -1;
-   while(PrintLog)
+   int CLine = 0;
+   while(BetaIn)
    {
-    Redudantcy += 1; if(NewLine) PrintText += "\n"; NewLine = true;
-	PrePrintText = ""; getline(PrintLog, PrePrintText); PrintText.append(PrePrintText, 0, PrePrintText.length());
-	unsigned int OldTextLength = PrintText.length();
-	if(OldTextLength > log_length[Redudantcy]) log_length[Redudantcy] = OldTextLength;
-	for(unsigned int repulish = 1; repulish <= log_length[Redudantcy] - OldTextLength; ++repulish) PrintText += " ";
-	log_length[Redudantcy] = OldTextLength;
+	CoutStringBeta = "|NULL|"; getline(BetaIn, CoutStringBeta); if(CoutStringBeta.compare("|NULL|") == 0) goto EndOut;
+    if(CLining) CoutString += "\n"; CLining = true;
+	CoutString.append(CoutStringBeta, 0, CoutStringBeta.length()); unsigned int CoutStringLength = CoutStringBeta.length();
+	RepeatOut:
+	if(CoutStringLength > (unsigned int)BufferSize){log_length[CLine] = (unsigned int)BufferSize; CoutStringLength -= (unsigned int)BufferSize; CLine += 1; goto RepeatOut;}
+	if(CoutStringLength < log_length[CLine]) for(unsigned int BetaRepulish = 0; BetaRepulish < log_length[CLine] - CoutStringLength; ++ BetaRepulish)
+	{
+	 CoutString += " ";
+	}
+	log_length[CLine] = CoutStringLength; CLine += 1;
    }
-   if(Redudantcy > log_Redudantcy) log_Redudantcy = Redudantcy;
-   for(int fullrepulish = 1; fullrepulish < log_Redudantcy - Redudantcy; ++fullrepulish)
+   EndOut:
+   if(CLine < log_CLine) for(int ExtraCLine = CLine; ExtraCLine < log_CLine; ++ExtraCLine)
    {
-	Redudantcy += 1; if(NewLine) PrintText += "\n"; NewLine = true;
-	for(unsigned int repulish = 1; repulish <= log_length[Redudantcy]; ++repulish) PrintText += " ";
+	for(unsigned int ExtraBetaRepulish = 0; ExtraBetaRepulish < log_length[ExtraCLine]; ++ExtraBetaRepulish) CoutString += " ";
+	if(log_length[ExtraCLine] < (unsigned int)BufferSize) CoutString += "\n";
    }
-   printReset(); printf("%s", PrintText.c_str()); PrintLog.close();
+   switch(BufferSize)
+   {
+    case 60: CoutString += "                                                            "; break;
+    case 80: CoutString += "                                                                                "; break;
+    case 100: CoutString += "                                                                                                    "; break;
+    case 120: CoutString += "                                                                                                                        "; break;
+    default: break;
+   }
+   log_CLine = CLine; BetaIn.close();
   }
-  std::ofstream ResetLog("log.txt"); ResetLog << ""; ResetLog.close();
+  printReset(); printf("%s", CoutString.c_str()); printLogClear();
  }
- void print(bool p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  if(p){PrintLog << "true";} else {PrintLog << "false";}
-  PrintLog.close();
- }
- void print(char p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  PrintLog << p;
-  PrintLog.close();
- }
- void print(short p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  PrintLog << p;
-  PrintLog.close();
- }
- void print(int p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  PrintLog << p;
-  PrintLog.close();
- }
- void print(long long p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  PrintLog << p;
-  PrintLog.close();
- }
- void print(unsigned char p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  PrintLog << p;
-  PrintLog.close();
- }
- void print(unsigned short p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  PrintLog << p;
-  PrintLog.close();
- }
- void print(unsigned int p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  PrintLog << p;
-  PrintLog.close();
- }
- void print(unsigned long long p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  PrintLog << p;
-  PrintLog.close();
- }
- void print(double p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  PrintLog << p;
-  PrintLog.close();
- }
- void print(float p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  PrintLog << p;
-  PrintLog.close();
- }
- void print(const std::string &p)
- {
-  std::ofstream PrintLog; PrintLog.open("log.txt", std::ofstream::app);
-  PrintLog << p;
-  PrintLog.close();
- }
+ void print(bool Varb01){if(Varb01){Log_Console += "true";} else {Log_Console += "false";}}
+ void print(char Varb01){Log_Console += std::to_string(Varb01);}
+ void print(short Varb01){Log_Console += std::to_string(Varb01);}
+ void print(int Varb01){Log_Console += std::to_string(Varb01);}
+ void print(long long Varb01){Log_Console += std::to_string(Varb01);}
+ void print(unsigned char Varb01){Log_Console += std::to_string(Varb01);}
+ void print(unsigned short Varb01){Log_Console += std::to_string(Varb01);}
+ void print(unsigned int Varb01){Log_Console += std::to_string(Varb01);}
+ void print(unsigned long long Varb01){Log_Console += std::to_string(Varb01);}
+ void print(double Varb01){Log_Console += std::to_string(Varb01);}
+ void print(float Varb01){Log_Console += std::to_string(Varb01);}
+ void print(const std::string &Strn01){Log_Console += Strn01;}
 
  std::string getFileName()
  {
@@ -1489,6 +1453,9 @@
   ScriptEngine->RegisterGlobalFunction("void DJAR(int vit)", asFUNCTION(DJAR), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("int rand(int n)", asFUNCTION(random), asCALL_CDECL);
 
+  
+  ScriptEngine->RegisterGlobalProperty("CharArray PlayerName", &PlayerName);
+  ScriptEngine->RegisterGlobalProperty("IntArray GameData", &GameData);
   ScriptEngine->RegisterGlobalProperty("const int mode", &mode);
   ScriptEngine->RegisterGlobalProperty("const int difficulty", &difficulty);
   ScriptEngine->RegisterGlobalProperty("const int elapsed_time", &elapsed_time);
@@ -1620,6 +1587,11 @@
  //System Functions
  void startup()
  {
+   PlayerName[0] = 71;
+   PlayerName[1] = 117;
+   PlayerName[2] = 101;
+   PlayerName[3] = 115;
+   PlayerName[4] = 116;
   #ifdef DEBUG_VERSION
    printOut();
    printf("                                                                                                                                                                                                                                                                        ");
@@ -1631,7 +1603,7 @@
    freopen("CONOUT$", "wb", stderr); // reopen stderr handle as console window output
    std::ifstream FindBufferSize("data\\23.as");
    std::string DumpString;
-   short BufferSize = 60;
+   BufferSize = 60;
    if(FindBufferSize.is_open()){while(FindBufferSize){FindBufferSize >> DumpString; if(DumpString.compare("ConsoleBuffer") == 0){FindBufferSize >> DumpString; FindBufferSize >> BufferSize; goto FoundIt;}} FindBufferSize.close();}
    FoundIt:
    if(FindBufferSize.is_open()) FindBufferSize.close();
@@ -1654,7 +1626,7 @@
    consolesize.srWindow.Top = 0;
    consolesize.srWindow.Bottom = BufferSize / 2;
    SetConsoleScreenBufferInfoEx(hConsole, &consolesize);
-   SetConsoleScreenBufferSize(hConsole, {BufferSize, 9000});
+   SetConsoleScreenBufferSize(hConsole, {BufferSize, 100});
    SetConsoleTitleA("Windows Console API - LF2 Enchanted 3rd's Debug Console - Refined by Mesujin");
   #endif
   ScriptModule = NULL;

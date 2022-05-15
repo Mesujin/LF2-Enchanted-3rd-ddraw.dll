@@ -158,6 +158,7 @@
     <ClInclude Include="Includes\detours.h" />
     <ClInclude Include="Includes\gamearrays.h" />
     <ClInclude Include="Includes\gameenums.h" />
+    <ClInclude Include="Includes\bmpgenerate.h" />
     <ClInclude Include="Includes\myIDDraw.h" />
     <ClInclude Include="Includes\resource.h" />
     <ClInclude Include="Includes\sgame.h" />
