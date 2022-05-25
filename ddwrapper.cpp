@@ -258,10 +258,34 @@
    std::string RTexting;
    std::string RTexting2;
    bool CompMode = true;
+   ////////////////////////////
+   int YAxisSingularity = 1000;
+   ////////////////////////////
    int NTexting = 0;
    int CenX = 0;
    int CenY = 0;
-   int YAxisSingularity = 1000;
+   int hit_a = 0;
+   int hit_d = 0;
+   int hit_j = 0;
+   int hit_Fa = 0;
+   int hit_Fj = 0;
+   int hit_Da = 0;
+   int hit_Dj = 0;
+   int hit_Ua = 0;
+   int hit_Uj = 0;
+   int dvz = 0;
+   int respond_01 = 0;
+   int respond_02 = 0;
+   int respond_03 = 0;
+   int respond_04 = 0;
+   int respond_05 = 0;
+   int cpointval = 0;
+   bool firstitrfounded = false;
+   bool seconitrfounded = false;
+   bool thirditrfounded = false;
+   bool fourtitrfounded = false;
+   bool fivetitrfounded = false;
+   bool cpointfounded = false;
    NewData << "# LF2 Enchanted 3rd Data Re-Generator by Mesujin # https://github.com/Mesujin #\n";
    while(OldData){OldData >> RTexting; if(RTexting.compare("#Startl") == 0) goto ReTexting;}
    ReTexting:
@@ -281,6 +305,8 @@
 	if(RTexting.compare("<bmp_end>") == 0) CompMode = false;
 	if(CompMode)
 	{
+	 if(RTexting.compare("face_pic:") == 0){RTexting = "head:"; goto TextFound;}
+	 if(RTexting.compare("small_pic:") == 0){RTexting = "small:"; goto TextFound;}
 	 if(RTexting.compare("max_hp:") == 0){RTexting = "dash_height"; goto TextFound;}
 	 if(RTexting.compare("movement_speed:") == 0){RTexting = "walking_speed"; goto TextFound;}
 	 if(RTexting.compare("weight:") == 0){RTexting = "walking_speedz"; goto TextFound;}
@@ -301,10 +327,53 @@
 	 if(RTexting.compare("speciality_15:") == 0){RTexting = "rowing_distance"; goto TextFound;}
 	} else
 	{
-	 if(RTexting.compare("<frame>") == 0){CenX = 0; CenY = 0; goto TextFound;}
+	 if(RTexting.compare("<frame>") == 0){cpointval = 0; cpointfounded = false; firstitrfounded = false; seconitrfounded = false; thirditrfounded = false; fourtitrfounded = false; fivetitrfounded = false; dvz = 0; respond_01 = 0; respond_02 = 0; respond_03 = 0; respond_04 = 0; respond_05 = 0; CenX = 0; CenY = 0; hit_a = 0; hit_d = 0; hit_j = 0; hit_Fa = 0; hit_Fj = 0; hit_Da = 0; hit_Dj = 0; hit_Ua = 0; hit_Uj = 0; goto TextFound;}
+	 if(RTexting.compare("<frame_end>") == 0)
+	 {
+	  if(!cpointfounded) NewData << "cpoint: daction: " << cpointval << " cpoint_end: ";
+	  if(!firstitrfounded) NewData << "itr: respond: " << respond_01 << " itr_end: ";
+	  if(!seconitrfounded) NewData << "itr: respond: " << respond_02 << " itr_end: ";
+	  if(!thirditrfounded) NewData << "itr: respond: " << respond_03 << " itr_end: ";
+	  if(!fourtitrfounded) NewData << "itr: respond: " << respond_04 << " itr_end: ";
+	  if(!fivetitrfounded) NewData << "itr: respond: " << respond_05 << " itr_end: ";
+	  NewData << "dvz: " << dvz << " hit_a: " << -hit_a << " hit_d: " << -hit_d << " hit_j: " << -hit_j << " hit_Fa: " << -hit_Fa << " hit_Fj: " << -hit_Fj << " hit_Da: " << -hit_Da << " hit_Dj: " << -hit_Dj << " hit_Ua: " << -hit_Ua << " hit_Uj: " << -hit_Uj << " ";
+	  goto TextFound;
+	 }
+	 if(RTexting.compare("input_a:") == 0){OldData >> NTexting; hit_a += NTexting % 1000; respond_05 += (NTexting - (NTexting % 1000)) / 1000; goto ReTexting;}
+	 if(RTexting.compare("input_d:") == 0){OldData >> NTexting; hit_a += (NTexting % 1000) * 1000; respond_05 += (NTexting - (NTexting % 1000)) / 10; goto ReTexting;}
+	 if(RTexting.compare("input_j:") == 0){OldData >> NTexting; hit_a += (NTexting % 1000) * 1000000; respond_05 += (NTexting - (NTexting % 1000)) * 10; goto ReTexting;}
+	 if(RTexting.compare("input_fa:") == 0){OldData >> NTexting; hit_d += NTexting % 1000; respond_05 += (NTexting - (NTexting % 1000)) * 1000; goto ReTexting;}
+	 if(RTexting.compare("input_fj:") == 0){OldData >> NTexting; hit_d += (NTexting % 1000) * 1000; respond_04 += (NTexting - (NTexting % 1000)) / 1000; goto ReTexting;}
+	 if(RTexting.compare("input_da:") == 0){OldData >> NTexting; hit_d += (NTexting % 1000) * 1000000; respond_04 += (NTexting - (NTexting % 1000)) / 10; goto ReTexting;}
+	 if(RTexting.compare("input_dj:") == 0){OldData >> NTexting; hit_j += NTexting % 1000; respond_04 += (NTexting - (NTexting % 1000)) * 10; goto ReTexting;}
+	 if(RTexting.compare("input_ua:") == 0){OldData >> NTexting; hit_j += (NTexting % 1000) * 1000; respond_04 += (NTexting - (NTexting % 1000)) * 1000; goto ReTexting;}
+	 if(RTexting.compare("input_uj:") == 0){OldData >> NTexting; hit_j += (NTexting % 1000) * 1000000; respond_03 += (NTexting - (NTexting % 1000)) / 1000; goto ReTexting;}
+	 if(RTexting.compare("input_ja:") == 0){OldData >> NTexting; hit_Fa += NTexting % 1000; respond_03 += (NTexting - (NTexting % 1000)) / 10; goto ReTexting;}
+	 if(RTexting.compare("input_>>:") == 0){OldData >> NTexting; hit_Fa += (NTexting % 1000) * 1000; respond_03 += (NTexting - (NTexting % 1000)) * 10; goto ReTexting;}
+	 if(RTexting.compare("input_<<:") == 0){OldData >> NTexting; hit_Fa += (NTexting % 1000) * 1000000; respond_03 += (NTexting - (NTexting % 1000)) * 1000; goto ReTexting;}
+	 if(RTexting.compare("input_aj:") == 0){OldData >> NTexting; hit_Fj += NTexting % 1000; respond_02 += (NTexting - (NTexting % 1000)) / 1000; goto ReTexting;}
+	 if(RTexting.compare("input_ad:") == 0){OldData >> NTexting; hit_Fj += (NTexting % 1000) * 1000; respond_02 += (NTexting - (NTexting % 1000)) / 10; goto ReTexting;}
+	 if(RTexting.compare("input_dj:") == 0){OldData >> NTexting; hit_Fj += (NTexting % 1000) * 1000000; respond_02 += (NTexting - (NTexting % 1000)) * 10; goto ReTexting;}
+	 if(RTexting.compare("input_<:") == 0){OldData >> NTexting; hit_Da += NTexting % 1000; respond_02 += (NTexting - (NTexting % 1000)) * 1000; goto ReTexting;}
+	 if(RTexting.compare("input_^^:") == 0){OldData >> NTexting; hit_Da += (NTexting % 1000) * 1000; respond_01 += (NTexting - (NTexting % 1000)) / 1000; goto ReTexting;}
+	 if(RTexting.compare("input_vv:") == 0){OldData >> NTexting; hit_Da += (NTexting % 1000) * 1000000; respond_01 += (NTexting - (NTexting % 1000)) / 10; goto ReTexting;}
+	 if(RTexting.compare("x_vel:") == 0){OldData >> NTexting; hit_Dj = NTexting; goto ReTexting;}
+	 if(RTexting.compare("y_vel:") == 0){OldData >> NTexting; hit_Ua = NTexting; goto ReTexting;}
+	 if(RTexting.compare("z_vel:") == 0){OldData >> NTexting; hit_Uj = NTexting; goto ReTexting;}
+	 if(RTexting.compare("itr:") == 0)
+	 {
+	  if(fourtitrfounded) if(!fivetitrfounded){NewData << "itr: respond: " << respond_05 << " "; fivetitrfounded = true; goto ReTexting;}
+	  if(thirditrfounded) if(!fourtitrfounded){NewData << "itr: respond: " << respond_04 << " "; fourtitrfounded = true; goto ReTexting;}
+	  if(seconitrfounded) if(!thirditrfounded){NewData << "itr: respond: " << respond_03 << " "; thirditrfounded = true; goto ReTexting;}
+	  if(firstitrfounded) if(!seconitrfounded){NewData << "itr: respond: " << respond_02 << " "; seconitrfounded = true; goto ReTexting;}
+	  if(!firstitrfounded){NewData << "itr: respond: " << respond_01 << " "; firstitrfounded = true; goto ReTexting;}
+	  goto TextFound;
+	 }
+	 if(RTexting.compare("ex_state:") == 0){RTexting = "hit_ja:"; goto TextFound;}
+	 if(RTexting.compare("ad_state:") == 0){OldData >> NTexting; cpointval = NTexting; goto ReTexting;}
 	 if(RTexting.compare("centerx:") == 0){NewData << RTexting << " "; OldData >> CenX; NewData << CenX << " "; goto ReTexting;}
 	 if(RTexting.compare("centery:") == 0){NewData << RTexting << " "; OldData >> CenY; NewData << CenY - YAxisSingularity << " "; goto ReTexting;}
-	 if(RTexting.compare("cpoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
+	 if(RTexting.compare("cpoint:") == 0){NewData << "cpoint: daction: " << cpointval << " "; cpointfounded = true; while(OldData){OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;} NewData << RTexting << " ";} goto TextEnd;}
 	 if(RTexting.compare("wpoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
 	 if(RTexting.compare("opoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
 	}
@@ -385,12 +454,16 @@
    strcpy(toPath, gamePath);
    strcat(toPath, "\\Database\\data\\23.as");
    std::ofstream RebuildingAInSystem(toPath);
-   char verCheckout[10000];
+   char verCheckout[20000];
 
-   while(AInSystemRebuild){getline(AInSystemRebuild, verChecking); RebuildingAInSystem << verChecking << "\n"; if(verChecking.compare("//Main System") == 0) goto RebuildSystem;}
+   while(AInSystemRebuild){getline(AInSystemRebuild, verChecking); RebuildingAInSystem << verChecking << "\n"; if(verChecking.compare("//Game-System") == 0) goto RebuildSystem;}
    RebuildSystem:
-   while(AInSystemRebuild){AInSystemRebuild >> verCheckout; if(strcmp(verCheckout, "//MainEnd") == 0) goto RebuildEnd; verChecking = verCheckout[0]; verChecking += verCheckout[1]; if(verChecking.compare("//") == 0){getline(AInSystemRebuild, verChecking); goto RebuildSystem;} RebuildingAInSystem << verCheckout << " ";}
-   RebuildEnd:
+   while(AInSystemRebuild){AInSystemRebuild >> verCheckout; if(strcmp(verCheckout, "//GameEnd") == 0) goto RebuildSystemEnd; verChecking = verCheckout[0]; verChecking += verCheckout[1]; if(verChecking.compare("//") == 0){getline(AInSystemRebuild, verChecking); goto RebuildSystem;} RebuildingAInSystem << verCheckout << " ";}
+   RebuildSystemEnd:
+   while(AInSystemRebuild){getline(AInSystemRebuild, verChecking); RebuildingAInSystem << verChecking << "\n"; if(verChecking.compare("//AI-System") == 0) goto RebuildAI;}
+   RebuildAI:
+   while(AInSystemRebuild){AInSystemRebuild >> verCheckout; if(strcmp(verCheckout, "//AIEnd") == 0) goto RebuildAIEnd; verChecking = verCheckout[0]; verChecking += verCheckout[1]; if(verChecking.compare("//") == 0){getline(AInSystemRebuild, verChecking); goto RebuildAI;} RebuildingAInSystem << verCheckout << " ";}
+   RebuildAIEnd:
    RebuildingAInSystem << "\n//-//";
 
    RebuildingAInSystem.close();
@@ -939,6 +1012,7 @@
  double Cnvrt_I_D(int vit){return static_cast<double>(vit);}
  float Cnvrt_D_F(double vit){return static_cast<float>(vit);}
  float Cnvrt_I_F(int vit){return static_cast<float>(vit);}
+ double Cnvrt_Round(double vit){return round(vit);}
 
  void A(int vit, char key, char holding)    {game->objects[vit]->A = key; game->objects[vit]->holding_a = holding;}
  void D(int vit, char key, char holding)    {game->objects[vit]->D = key; game->objects[vit]->holding_d = holding;}
@@ -979,6 +1053,8 @@
  void Control_FOKind(int vit, int agi, int dex){game->objects[vit]->data->frames[agi].opoint.kind = dex;}
  void Control_Arest(int vit, int agi)          {game->objects[vit]->arest = agi;}
  void Control_Vrest(int vit, int agi, int dex) {if(dex > 125){dex = 125;} else {if(dex < -125) dex = -125;} game->objects[vit]->vrests[agi] = static_cast<char>(dex);}
+ //void Control_InputNone(int vit)               {game->objects[vit]->A = 0; game->objects[vit]->D = 0; game->objects[vit]->J = 0; game->objects[vit]->up = 0; game->objects[vit]->left = 0; game->objects[vit]->down = 0; game->objects[vit]->right = 0; game->objects[vit]->DrA = 0; game->objects[vit]->DlA = 0; game->objects[vit]->DuA = 0; game->objects[vit]->DdA = 0; game->objects[vit]->DrJ = 0; game->objects[vit]->DlJ = 0; game->objects[vit]->DuJ = 0; game->objects[vit]->DdJ = 0; game->objects[vit]->DJA = 0;}
+
  void Control_InputNone(int vit)               {game->objects[vit]->A = 0; game->objects[vit]->holding_a = 0; game->objects[vit]->D = 0; game->objects[vit]->holding_d = 0; game->objects[vit]->J = 0; game->objects[vit]->holding_j = 0; game->objects[vit]->up = 0; game->objects[vit]->holding_up = 0; game->objects[vit]->left = 0; game->objects[vit]->holding_left = 0; game->objects[vit]->down = 0; game->objects[vit]->holding_down = 0; game->objects[vit]->right = 0; game->objects[vit]->holding_right = 0; game->objects[vit]->DrA = 0; game->objects[vit]->DlA = 0; game->objects[vit]->DuA = 0; game->objects[vit]->DdA = 0; game->objects[vit]->DrJ = 0; game->objects[vit]->DlJ = 0; game->objects[vit]->DuJ = 0; game->objects[vit]->DdJ = 0; game->objects[vit]->DJA = 0;}
 
  void Control_BG(int agi)          {*(int*)0x44d024 = agi;}
@@ -1361,6 +1437,7 @@
   ScriptEngine->RegisterGlobalFunction("double Cnvrt_I_D(int vit)", asFUNCTION(Cnvrt_I_D), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("float Cnvrt_D_F(double vit)", asFUNCTION(Cnvrt_D_F), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("float Cnvrt_I_F(int vit)", asFUNCTION(Cnvrt_I_F), asCALL_CDECL);
+  ScriptEngine->RegisterGlobalFunction("double Cnvrt_Round(double vit)", asFUNCTION(Cnvrt_Round), asCALL_CDECL);
 
   ScriptEngine->RegisterGlobalFunction("int Camera()", asFUNCTION(Camera), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void Control_MHP(int vit, int agi)", asFUNCTION(Control_MHP), asCALL_CDECL);
@@ -1452,7 +1529,6 @@
   ScriptEngine->RegisterGlobalFunction("void D(int vit, bool key, bool holding)", asFUNCTION(D), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void DJAR(int vit)", asFUNCTION(DJAR), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("int rand(int n)", asFUNCTION(random), asCALL_CDECL);
-
   
   ScriptEngine->RegisterGlobalProperty("CharArray PlayerName", &PlayerName);
   ScriptEngine->RegisterGlobalProperty("IntArray GameData", &GameData);
