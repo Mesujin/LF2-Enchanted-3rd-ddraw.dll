@@ -258,48 +258,18 @@
    std::string RTexting;
    std::string RTexting2;
    bool CompMode = true;
-   ////////////////////////////
-   int YAxisSingularity = 1000;
-   ////////////////////////////
    int NTexting = 0;
-   int CenX = 0;
-   int CenY = 0;
-   int hit_a = 0;
-   int hit_d = 0;
-   int hit_j = 0;
-   int hit_Fa = 0;
-   int hit_Fj = 0;
-   int hit_Da = 0;
-   int hit_Dj = 0;
-   int hit_Ua = 0;
-   int hit_Uj = 0;
-   int dvz = 0;
-   int respond_01 = 0;
-   int respond_02 = 0;
-   int respond_03 = 0;
-   int respond_04 = 0;
-   int respond_05 = 0;
-   int cpointval = 0;
-   bool firstitrfounded = false;
-   bool seconitrfounded = false;
-   bool thirditrfounded = false;
-   bool fourtitrfounded = false;
-   bool fivetitrfounded = false;
-   bool cpointfounded = false;
    NewData << "# LF2 Enchanted 3rd Data Re-Generator by Mesujin # https://github.com/Mesujin #\n";
    while(OldData){OldData >> RTexting; if(RTexting.compare("#Startl") == 0) goto ReTexting;}
    ReTexting:
    while(OldData)
    {
 	OldData >> RTexting;
-	RTexting2 = *RTexting.begin(); if(RTexting2.compare("#") == 0)
+	RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0)
 	{
-	 if(RTexting.compare("##") == 0 ){getline(OldData, RTexting); goto CommandFound;}
-     if(RTexting.compare("#C:Pic+140") == 0){NewData << "file(0-140): sprite\\Other\\none.bmp w: 1 h: 1 row: 1 col: 140 "; goto CommandFound;}
-	 if(RTexting.compare("#C:PerfectBdy") == 0){NewData << "bdy: kind: 0 x: " << CenX - 5 << " y: " << CenY - 10 << " w: 10 h: 10 bdy_end: "; goto CommandFound;}
 	 if(RTexting.compare("#Endl") == 0) goto TextEnd;
 	 CommandFound:
-	 goto ReTexting;
+	 getline(OldData, RTexting); goto ReTexting;
 	}
 	if(RTexting.compare("<bmp_begin>") == 0) CompMode = true;
 	if(RTexting.compare("<bmp_end>") == 0) CompMode = false;
@@ -327,55 +297,310 @@
 	 if(RTexting.compare("speciality_15:") == 0){RTexting = "rowing_distance"; goto TextFound;}
 	} else
 	{
-	 if(RTexting.compare("<frame>") == 0){cpointval = 0; cpointfounded = false; firstitrfounded = false; seconitrfounded = false; thirditrfounded = false; fourtitrfounded = false; fivetitrfounded = false; dvz = 0; respond_01 = 0; respond_02 = 0; respond_03 = 0; respond_04 = 0; respond_05 = 0; CenX = 0; CenY = 0; hit_a = 0; hit_d = 0; hit_j = 0; hit_Fa = 0; hit_Fj = 0; hit_Da = 0; hit_Dj = 0; hit_Ua = 0; hit_Uj = 0; goto TextFound;}
-	 if(RTexting.compare("<frame_end>") == 0)
+	 ///////////////////
+	 if(RTexting.compare("<frame>") == 0)
 	 {
-	  if(!cpointfounded) NewData << "cpoint: daction: " << cpointval << " cpoint_end: ";
-	  if(!firstitrfounded) NewData << "itr: respond: " << respond_01 << " itr_end: ";
-	  if(!seconitrfounded) NewData << "itr: respond: " << respond_02 << " itr_end: ";
-	  if(!thirditrfounded) NewData << "itr: respond: " << respond_03 << " itr_end: ";
-	  if(!fourtitrfounded) NewData << "itr: respond: " << respond_04 << " itr_end: ";
-	  if(!fivetitrfounded) NewData << "itr: respond: " << respond_05 << " itr_end: ";
-	  NewData << "dvz: " << dvz << " hit_a: " << -hit_a << " hit_d: " << -hit_d << " hit_j: " << -hit_j << " hit_Fa: " << -hit_Fa << " hit_Fj: " << -hit_Fj << " hit_Da: " << -hit_Da << " hit_Dj: " << -hit_Dj << " hit_Ua: " << -hit_Ua << " hit_Uj: " << -hit_Uj << " ";
-	  goto TextFound;
+	  int frame_num = 0; std::string frame_name;
+	  OldData >> frame_num >> frame_name;
+	  std::string main_sound; bool main_sound_ex = false;
+	  int main_pic = 0; int main_state = 0; int main_wait = 0; int main_next = 0; int main_dvz = 0; int main_centerx = 0; int main_centery = 0;
+	  int main_hit_a = 0; int main_hit_d = 0; int main_hit_j = 0; int main_hit_fa = 0; int main_hit_fj = 0; int main_hit_da = 0; int main_hit_dj = 0; int main_hit_ua = 0; int main_hit_uj = 0; int main_hit_ja = 0;
+	  int opoint_kind = 0; int opoint_x = 0; int opoint_y = 0; int opoint_oid = 0; int opoint_action = 0; int opoint_facing = 0; int opoint_dvx = 0; int opoint_dvy = 0;
+	  int cpoint_kind = 0; int cpoint_x = 0; int cpoint_y = 0; int cpoint_vaction = 0; int cpoint_aaction = 0; int cpoint_daction = 0; int cpoint_jaction = 0; int cpoint_taction = 0;
+	  int cpoint_cover = 0;
+	  int cpoint_injury = 0;
+	  int cpoint_hurtable = 0;
+	  int cpoint_decrease = 0;
+	  int cpoint_dircontrol = 0;
+	  int cpoint_throwvx = 0;
+	  int cpoint_throwvy = 0;
+	  int cpoint_throwvz = 0;
+	  int cpoint_throwinjury = 0;
+	  int wpoint_kind = 0; int wpoint_x = 0; int wpoint_y = 0; int wpoint_weaponact = 0; int wpoint_attacking = 0; int wpoint_cover = 0; int wpoint_dvx = 0; int wpoint_dvy = 0; int wpoint_dvz = 0;
+	  int itr_count = 0;
+	  int itr_kind[5] = {12, 12, 12, 12, 12}; int itr_x[5] = {0, 0, 0, 0, 0}; int itr_y[5] = {0, 0, 0, 0, 0}; int itr_w[5] = {0, 0, 0, 0, 0}; int itr_h[5] = {0, 0, 0, 0, 0};
+	  int itr_dvx[5] = {0, 0, 0, 0, 0};
+	  int itr_dvy[5] = {0, 0, 0, 0, 0};
+	  int itr_fall[5] = {0, 0, 0, 0, 0};
+	  int itr_arest[5] = {0, 0, 0, 0, 0};
+	  int itr_vrest[5] = {0, 0, 0, 0, 0};
+	  int itr_respond[5] = {0, 0, 0, 0, 0};
+	  int itr_effect[5] = {0, 0, 0, 0, 0};
+	  int itr_catchingact1[5] = {0, 0, 0, 0, 0};
+	  int itr_catchingact2[5] = {0, 0, 0, 0, 0};
+	  int itr_caughtact1[5] = {0, 0, 0, 0, 0};
+	  int itr_caughtact2[5] = {0, 0, 0, 0, 0};
+   	  int itr_bdefend[5] = {0, 0, 0, 0, 0};
+	  int itr_injury[5] = {0, 0, 0, 0, 0};
+	  int itr_zwidth[5] = {0, 0, 0, 0, 0};
+	  int bdy_count = 0;
+	  int bdy_kind[5] = {0, 0, 0, 0, 0}; int bdy_x[5] = {0, 0, 0, 0, 0}; int bdy_y[5] = {0, 0, 0, 0, 0}; int bdy_w[5] = {0, 0, 0, 0, 0}; int bdy_h[5] = {0, 0, 0, 0, 0};
+	  while(OldData)
+	  {
+	   OldData >> RTexting;
+	   RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0)
+	   {
+		if(RTexting.compare("#PerfectBdy") == 0)
+		{
+	     int bdies;
+		 if(bdy_count % 2 == 0)
+		 {
+		  bdies = bdy_count / 2;
+		 } else
+		 {
+		  bdies = (bdy_count - 1) / 2;
+		 }
+			bdy_kind[bdy_count] = 7; bdy_count += 1; goto FCommandFound;
+		}
+	    if(RTexting.compare("#Endl") == 0) goto TextEnd;
+	    FCommandFound: getline(OldData, RTexting); continue;
+	   }
+	   if(RTexting.compare("itr:") == 0)
+	   {
+		if(itr_count == 10) itr_count = 0;
+		bool x_neg = false; bool y_neg = false; bool z_neg = false; int itries;
+		if(bdy_count % 2 == 0)
+		{
+		 itries = itr_count / 2;
+		 while(OldData)
+		 {
+		  OldData >> RTexting;
+	      if(RTexting.compare("kind:") == 0){OldData >> NTexting; itr_vrest[itries] += NTexting * 10000000; continue;}
+		  if(RTexting.compare("x:") == 0){OldData >> NTexting; if(NTexting < 0){x_neg = true; itr_x[itries] -= NTexting;} else {itr_x[itries] += NTexting;} continue;}
+		  if(RTexting.compare("y:") == 0){OldData >> NTexting; if(NTexting < 0){y_neg = true; itr_y[itries] -= NTexting;} else {itr_y[itries] += NTexting;} continue;}
+		  if(RTexting.compare("z:") == 0){OldData >> NTexting; if(NTexting < 0){z_neg = true; itr_w[itries] -= NTexting;} else {itr_w[itries] += NTexting;} continue;}
+	      if(RTexting.compare("w:") == 0){OldData >> NTexting; itr_x[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("h:") == 0){OldData >> NTexting; itr_y[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("l:") == 0){OldData >> NTexting; itr_w[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("shape:") == 0){OldData >> NTexting; itr_y[itries] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("x-ax_rot:") == 0){OldData >> NTexting; itr_h[itries] += NTexting; continue;}
+	      if(RTexting.compare("y-ax_rot:") == 0){OldData >> NTexting; itr_h[itries] += NTexting * 100; continue;}
+	      if(RTexting.compare("z-ax_rot:") == 0){OldData >> NTexting; itr_h[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("starting:") == 0){OldData >> NTexting; itr_h[itries] += NTexting * 1000000; continue;}
+	      if(RTexting.compare("spark:") == 0){OldData >> NTexting; itr_h[itries] += NTexting * 10000000; continue;}
+	      if(RTexting.compare("respond:") == 0){OldData >> NTexting; itr_dvx[itries] += NTexting; continue;}
+	      if(RTexting.compare("injury_ef:") == 0){OldData >> NTexting; itr_dvx[itries] += NTexting * 1000; continue;}
+	      if(RTexting.compare("bdefend:") == 0){OldData >> NTexting; itr_vrest[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("damage:") == 0){OldData >> NTexting; itr_dvy[itries] = NTexting; continue;}
+	      if(RTexting.compare("a_rest:") == 0){OldData >> NTexting; itr_fall[itries] += NTexting; continue;}
+	      if(RTexting.compare("v_rest:") == 0){OldData >> NTexting; itr_fall[itries] += NTexting * 1000; continue;}
+	      if(RTexting.compare("x_vel:") == 0){OldData >> NTexting; itr_arest[itries] += (NTexting % 10000); itr_fall[itries] += (NTexting - (NTexting % 10000)) * 100; continue;}
+	      if(RTexting.compare("y_vel:") == 0){OldData >> NTexting; itr_vrest[itries] += (NTexting % 10000); itr_fall[itries] += (NTexting - (NTexting % 10000)) * 1000; continue;}
+	      if(RTexting.compare("z_vel:") == 0){OldData >> NTexting; itr_arest[itries] += (NTexting % 10000) * 10000; itr_fall[itries] += (NTexting - (NTexting % 10000)) * 1000; continue;}
+	      if(RTexting.compare("effect:") == 0){OldData >> NTexting; itr_w[itries] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("itr_end:") == 0) goto Itr_End1;
+		 }
+		 goto TextEnd; Itr_End1: itr_count += 1; if(x_neg){if(y_neg){if(z_neg){itr_x[itries] += 700000000;} else {itr_x[itries] += 400000000;}} else {if(z_neg){itr_x[itries] += 500000000;} else {itr_x[itries] += 100000000;}}} else {if(y_neg){if(z_neg){itr_x[itries] += 600000000;} else {itr_x[itries] += 200000000;}} else {if(z_neg){itr_x[itries] += 300000000;} else {continue;}}} continue;
+		} else
+		{
+		 itries = (itr_count - 1) / 2; int Requsive = 0;
+		 while(OldData)
+		 {
+		  OldData >> RTexting;
+	      if(RTexting.compare("kind:") == 0){OldData >> NTexting; Requsive += NTexting * 10000000; continue;}
+		  if(RTexting.compare("x:") == 0){OldData >> NTexting; if(NTexting < 0){x_neg = true; itr_effect[itries] -= NTexting;} else {itr_effect[itries] += NTexting;} continue;}
+		  if(RTexting.compare("y:") == 0){OldData >> NTexting; if(NTexting < 0){y_neg = true; itr_catchingact1[itries] -= NTexting;} else {itr_catchingact1[itries] += NTexting;} continue;}
+		  if(RTexting.compare("z:") == 0){OldData >> NTexting; if(NTexting < 0){z_neg = true; itr_catchingact2[itries] -= NTexting;} else {itr_catchingact2[itries] += NTexting;} continue;}
+	      if(RTexting.compare("w:") == 0){OldData >> NTexting; itr_effect[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("h:") == 0){OldData >> NTexting; itr_catchingact1[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("l:") == 0){OldData >> NTexting; itr_catchingact2[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("shape:") == 0){OldData >> NTexting; itr_catchingact1[itries] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("x-ax_rot:") == 0){OldData >> NTexting; itr_caughtact1[itries] += NTexting; continue;}
+	      if(RTexting.compare("y-ax_rot:") == 0){OldData >> NTexting; itr_caughtact1[itries] += NTexting * 100; continue;}
+	      if(RTexting.compare("z-ax_rot:") == 0){OldData >> NTexting; itr_caughtact1[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("starting:") == 0){OldData >> NTexting; itr_caughtact1[itries] += NTexting * 1000000; continue;}
+	      if(RTexting.compare("spark:") == 0){OldData >> NTexting; itr_caughtact1[itries] += NTexting * 10000000; continue;}
+	      if(RTexting.compare("respond:") == 0){OldData >> NTexting; itr_caughtact2[itries] += NTexting; continue;}
+	      if(RTexting.compare("injury_ef:") == 0){OldData >> NTexting; itr_caughtact2[itries] += NTexting * 1000; continue;}
+	      if(RTexting.compare("bdefend:") == 0){OldData >> NTexting; Requsive += NTexting * 10000; continue;}
+	      if(RTexting.compare("damage:") == 0){OldData >> NTexting; itr_bdefend[itries] = NTexting; continue;}
+	      if(RTexting.compare("a_rest:") == 0){OldData >> NTexting; itr_injury[itries] += NTexting; continue;}
+	      if(RTexting.compare("v_rest:") == 0){OldData >> NTexting; itr_injury[itries] += NTexting * 1000; continue;}
+	      if(RTexting.compare("x_vel:") == 0){OldData >> NTexting; itr_zwidth[itries] += (NTexting % 10000); itr_injury[itries] += (NTexting - (NTexting % 10000)) * 100; continue;}
+	      if(RTexting.compare("y_vel:") == 0){OldData >> NTexting; Requsive += (NTexting % 10000); itr_injury[itries] += (NTexting - (NTexting % 10000)) * 1000; continue;}
+	      if(RTexting.compare("z_vel:") == 0){OldData >> NTexting; itr_zwidth[itries] += (NTexting % 10000) * 10000; itr_injury[itries] += (NTexting - (NTexting % 10000)) * 1000; continue;}
+	      if(RTexting.compare("effect:") == 0){OldData >> NTexting; itr_catchingact2[itries] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("itr_end:") == 0) goto Itr_End2;
+		 }
+		 goto TextEnd;
+		 switch(itries)
+		 {
+		  case 0:
+		   cpoint_vaction = Requsive;
+		  break;
+		  case 1:
+		   cpoint_aaction = Requsive;
+		  break;
+		  case 2:
+		   cpoint_daction = Requsive;
+		  break;
+		  case 3:
+		   cpoint_jaction = Requsive;
+		  break;
+		  case 4:
+		   cpoint_taction = Requsive;
+		  break;
+		  default: break;
+		 }
+	     Itr_End2: itr_count += 1; if(x_neg){if(y_neg){if(z_neg){itr_effect[itries] += 700000000;} else {itr_effect[itries] += 400000000;}} else {if(z_neg){itr_effect[itries] += 500000000;} else {itr_effect[itries] += 100000000;}}} else {if(y_neg){if(z_neg){itr_effect[itries] += 600000000;} else {itr_effect[itries] += 200000000;}} else {if(z_neg){itr_effect[itries] += 300000000;} else {continue;}}} continue;
+		}
+	   }
+	   if(RTexting.compare("bdy:") == 0)
+	   {
+		if(bdy_count == 10) bdy_count = 0;
+		bool x_neg = false; bool y_neg = false; bool z_neg = false; int bdies;
+		if(bdy_count % 2 == 0)
+		{
+		 bdies = bdy_count / 2;
+		 while(OldData)
+		 {
+		  OldData >> RTexting;
+		  if(RTexting.compare("x:") == 0)    {OldData >> NTexting; if(NTexting < 0){x_neg = true; bdy_kind[bdies] -= NTexting;} else {bdy_kind[bdies] += NTexting;} continue;}
+		  if(RTexting.compare("y:") == 0)    {OldData >> NTexting; if(NTexting < 0){y_neg = true; bdy_x[bdies] -= NTexting;} else {bdy_x[bdies] += NTexting;} continue;}
+		  if(RTexting.compare("z:") == 0)    {OldData >> NTexting; if(NTexting < 0){z_neg = true; bdy_y[bdies] -= NTexting;} else {bdy_y[bdies] += NTexting;} continue;}
+	      if(RTexting.compare("w:") == 0)    {OldData >> NTexting; bdy_kind[bdies] += NTexting * 10000; continue;}
+	      if(RTexting.compare("h:") == 0)    {OldData >> NTexting; bdy_x[bdies] += NTexting * 10000; continue;}
+	      if(RTexting.compare("l:") == 0)    {OldData >> NTexting; bdy_y[bdies] += NTexting * 10000; continue;}
+	      if(RTexting.compare("shape:") == 0){OldData >> NTexting; bdy_x[bdies] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("bdy_end:") == 0) goto Bdy_End;
+		 }
+		 goto TextEnd; Bdy_End: bdy_count += 1; if(x_neg){if(y_neg){if(z_neg){bdy_kind[bdies] += 700000000;} else {bdy_kind[bdies] += 400000000;}} else {if(z_neg){bdy_kind[bdies] += 500000000;} else {bdy_kind[bdies] += 100000000;}}} else {if(y_neg){if(z_neg){bdy_kind[bdies] += 600000000;} else {bdy_kind[bdies] += 200000000;}} else {if(z_neg){bdy_kind[bdies] += 300000000;} else {continue;}}} continue;
+		} else
+		{
+		 bdies = (bdy_count - 1) / 2;
+		 while(OldData)
+		 {
+		  OldData >> RTexting;
+		  if(RTexting.compare("x:") == 0){OldData >> NTexting; if(NTexting < 0){x_neg = true; bdy_w[bdies] -= NTexting;} else {bdy_w[bdies] += NTexting;} continue;}
+		  if(RTexting.compare("y:") == 0){OldData >> NTexting; if(NTexting < 0){y_neg = true; bdy_h[bdies] -= NTexting;} else {bdy_h[bdies] += NTexting;} continue;}
+		  if(RTexting.compare("z:") == 0)
+		  {
+		   OldData >> NTexting;
+		   switch(bdies)
+		   {
+		    case 0:
+		     if(NTexting < 0){z_neg = true; cpoint_dircontrol -= NTexting;} else {cpoint_dircontrol += NTexting;}
+			break;
+		    case 1:
+		     if(NTexting < 0){z_neg = true; cpoint_throwvx -= NTexting;} else {cpoint_throwvx += NTexting;}
+			break;
+		    case 2:
+		     if(NTexting < 0){z_neg = true; cpoint_throwvy -= NTexting;} else {cpoint_throwvy += NTexting;}
+			break;
+		    case 3:
+		     if(NTexting < 0){z_neg = true; cpoint_throwvz -= NTexting;} else {cpoint_throwvz += NTexting;}
+			break;
+		    case 4:
+		     if(NTexting < 0){z_neg = true; cpoint_throwinjury -= NTexting;} else {cpoint_throwinjury += NTexting;}
+			break;
+		    default: break;
+		   }
+		   continue;
+		  }
+	      if(RTexting.compare("w:") == 0){OldData >> NTexting; bdy_w[bdies] += NTexting * 10000; continue;}
+	      if(RTexting.compare("h:") == 0){OldData >> NTexting; bdy_h[bdies] += NTexting * 10000; continue;}
+	      if(RTexting.compare("l:") == 0)
+		  {
+		   OldData >> NTexting;
+		   switch(bdies)
+		   {
+		    case 0:
+	         cpoint_dircontrol += NTexting * 10000;
+			break;
+		    case 1:
+	         cpoint_throwvx += NTexting * 10000;
+			break;
+		    case 2:
+	         cpoint_throwvy += NTexting * 10000;
+			break;
+		    case 3:
+	         cpoint_throwvz += NTexting * 10000;
+			break;
+		    case 4:
+	         cpoint_throwinjury += NTexting * 10000;
+			break;
+		    default: break;
+		   }
+		   continue;
+		  }
+	      if(RTexting.compare("shape:") == 0){OldData >> NTexting; bdy_h[bdies] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("bdy_end:") == 0) goto Bdy_End2;
+		 }
+		 goto TextEnd; Bdy_End2: bdy_count += 1; if(x_neg){if(y_neg){if(z_neg){bdy_w[bdies] += 700000000;} else {bdy_w[bdies] += 400000000;}} else {if(z_neg){bdy_w[bdies] += 500000000;} else {bdy_w[bdies] += 100000000;}}} else {if(y_neg){if(z_neg){bdy_w[bdies] += 600000000;} else {bdy_w[bdies] += 200000000;}} else {if(z_neg){bdy_w[bdies] += 300000000;} else {continue;}}} continue;
+		}
+	   }
+	   if(RTexting.compare("opoint:") == 0)
+	   {
+		while(OldData)
+		{
+		 OldData >> RTexting;
+	     if(RTexting.compare("kind:") == 0)  {OldData >> NTexting; opoint_kind = NTexting; continue;}
+	     if(RTexting.compare("x:") == 0)     {OldData >> NTexting; opoint_x = NTexting; continue;}
+	     if(RTexting.compare("y:") == 0)     {OldData >> NTexting; opoint_y = NTexting; continue;}
+	     if(RTexting.compare("oid:") == 0)   {OldData >> NTexting; opoint_oid = NTexting; continue;}
+	     if(RTexting.compare("action:") == 0){OldData >> NTexting; opoint_action = NTexting; continue;}
+	     if(RTexting.compare("facing:") == 0){OldData >> NTexting; opoint_facing = NTexting; continue;}
+	     if(RTexting.compare("dvx:") == 0)   {OldData >> NTexting; opoint_dvx = NTexting; continue;}
+	     if(RTexting.compare("dvy:") == 0)   {OldData >> NTexting; opoint_dvy = NTexting; continue;}
+	     if(RTexting.compare("opoint_end:") == 0) goto Opoint_End;
+		}
+		goto TextEnd; Opoint_End: continue;
+	   }
+	   if(RTexting.compare("cpoint:") == 0)
+	   {
+		while(OldData)
+		{
+		 OldData >> RTexting;
+	     if(RTexting.compare("kind:") == 0){OldData >> NTexting; cpoint_kind += NTexting * 10; continue;}
+	     if(RTexting.compare("cpoint_end:") == 0) goto Cpoint_End;
+		}
+		goto TextEnd; Cpoint_End: continue;
+	   }
+	   if(RTexting.compare("pic:") == 0)     {OldData >> NTexting; main_pic = NTexting; continue;}
+	   if(RTexting.compare("state:") == 0)   {OldData >> NTexting; main_state = NTexting; continue;}
+	   if(RTexting.compare("ex_state:") == 0){OldData >> NTexting; main_hit_ja = NTexting; continue;}
+	   if(RTexting.compare("ad_state:") == 0){OldData >> NTexting; cpoint_daction = NTexting; continue;}
+	   if(RTexting.compare("wait:") == 0)    {OldData >> NTexting; main_wait = NTexting; continue;}
+	   if(RTexting.compare("next:") == 0)    {OldData >> NTexting; main_next = NTexting; continue;}
+	   if(RTexting.compare("centerx:") == 0) {OldData >> NTexting; main_centerx = NTexting; continue;}
+	   if(RTexting.compare("centery:") == 0) {OldData >> NTexting; main_centery = NTexting; continue;}
+	   if(RTexting.compare("x_vel:") == 0)   {OldData >> NTexting; main_hit_dj = NTexting; continue;}
+	   if(RTexting.compare("y_vel:") == 0)   {OldData >> NTexting; main_hit_ua = NTexting; continue;}
+	   if(RTexting.compare("z_vel:") == 0)   {OldData >> NTexting; main_hit_uj = NTexting; continue;}
+	   if(RTexting.compare("input_a:") == 0) {OldData >> NTexting; main_hit_a += NTexting % 1000; itr_respond[4] += (NTexting - (NTexting % 1000)) / 1000; continue;}
+	   if(RTexting.compare("input_d:") == 0) {OldData >> NTexting; main_hit_a += (NTexting % 1000) * 1000; itr_respond[4] += (NTexting - (NTexting % 1000)) / 10; continue;}
+	   if(RTexting.compare("input_j:") == 0) {OldData >> NTexting; main_hit_a += (NTexting % 1000) * 1000000; itr_respond[4] += (NTexting - (NTexting % 1000)) * 10; continue;}
+	   if(RTexting.compare("input_fa:") == 0){OldData >> NTexting; main_hit_d += NTexting % 1000; itr_respond[4] += (NTexting - (NTexting % 1000)) * 1000; continue;}
+	   if(RTexting.compare("input_fj:") == 0){OldData >> NTexting; main_hit_d += (NTexting % 1000) * 1000; itr_respond[3] += (NTexting - (NTexting % 1000)) / 1000; continue;}
+	   if(RTexting.compare("input_da:") == 0){OldData >> NTexting; main_hit_d += (NTexting % 1000) * 1000000; itr_respond[3] += (NTexting - (NTexting % 1000)) / 10; continue;}
+	   if(RTexting.compare("input_dj:") == 0){OldData >> NTexting; main_hit_j += NTexting % 1000; itr_respond[3] += (NTexting - (NTexting % 1000)) * 10; continue;}
+	   if(RTexting.compare("input_ua:") == 0){OldData >> NTexting; main_hit_j += (NTexting % 1000) * 1000; itr_respond[3] += (NTexting - (NTexting % 1000)) * 1000; continue;}
+	   if(RTexting.compare("input_uj:") == 0){OldData >> NTexting; main_hit_j += (NTexting % 1000) * 1000000; itr_respond[2] += (NTexting - (NTexting % 1000)) / 1000; continue;}
+	   if(RTexting.compare("input_ja:") == 0){OldData >> NTexting; main_hit_fa += NTexting % 1000; itr_respond[2] += (NTexting - (NTexting % 1000)) / 10; continue;}
+	   if(RTexting.compare("input_>>:") == 0){OldData >> NTexting; main_hit_fa += (NTexting % 1000) * 1000; itr_respond[2] += (NTexting - (NTexting % 1000)) * 10; continue;}
+	   if(RTexting.compare("input_<<:") == 0){OldData >> NTexting; main_hit_fa += (NTexting % 1000) * 1000000; itr_respond[2] += (NTexting - (NTexting % 1000)) * 1000; continue;}
+	   if(RTexting.compare("input_aj:") == 0){OldData >> NTexting; main_hit_fj += NTexting % 1000; itr_respond[1] += (NTexting - (NTexting % 1000)) / 1000; continue;}
+	   if(RTexting.compare("input_ad:") == 0){OldData >> NTexting; main_hit_fj += (NTexting % 1000) * 1000; itr_respond[1] += (NTexting - (NTexting % 1000)) / 10; continue;}
+	   if(RTexting.compare("input_dj:") == 0){OldData >> NTexting; main_hit_fj += (NTexting % 1000) * 1000000; itr_respond[1] += (NTexting - (NTexting % 1000)) * 10; continue;}
+	   if(RTexting.compare("input_<:") == 0) {OldData >> NTexting; main_hit_da += NTexting % 1000; itr_respond[1] += (NTexting - (NTexting % 1000)) * 1000; continue;}
+	   if(RTexting.compare("input_^^:") == 0){OldData >> NTexting; main_hit_da += (NTexting % 1000) * 1000; itr_respond[0] += (NTexting - (NTexting % 1000)) / 1000; continue;}
+	   if(RTexting.compare("input_vv:") == 0){OldData >> NTexting; main_hit_da += (NTexting % 1000) * 1000000; itr_respond[0] += (NTexting - (NTexting % 1000)) / 10; continue;}
+	   if(RTexting.compare("sound:") == 0)   {OldData >> RTexting; main_sound = RTexting; main_sound_ex = true; continue;}
+	   if(RTexting.compare("<frame_end>") == 0) goto FrameEnd;
+	  }
+	  goto TextEnd;
+      FrameEnd:
+	  NewData << "<frame> " << frame_num << " " << frame_name << " pic: " << main_pic << " state: " << main_state << " wait: " << main_wait << " next: " << main_next << " dvz: " << main_dvz << " centerx: " << main_centerx << " centery: " << main_centery << " hit_a: " << main_hit_a << " hit_d: " << main_hit_d << " hit_j: " << main_hit_j << " hit_Fa: " << main_hit_fa << " hit_Fj: " << main_hit_fj << " hit_Da: " << main_hit_da << " hit_Dj: " << main_hit_da << " hit_Ua: " << main_hit_ua << " hit_Uj: " << main_hit_uj << " hit_ja: " << main_hit_ja;
+	  if(main_sound_ex) NewData << " sound: " << main_sound;
+	  NewData << " opoint: kind: " << opoint_kind << " x: " << opoint_x << " y: " << opoint_y << " oid: " << opoint_oid << " action: " << opoint_action << " facing: " << opoint_facing << " dvx: " << opoint_dvx << " dvy: " << opoint_dvy << " opoint_end: cpoint: kind: " << cpoint_kind << " x: " << cpoint_x << " y: " << cpoint_y << " vaction: " << cpoint_vaction << " aaction: " << cpoint_aaction << " daction: " << cpoint_daction << " jaction: " << cpoint_jaction << " taction: " << cpoint_taction << " cover: " << cpoint_cover << " injury: " << cpoint_injury << " dircontrol: " << cpoint_dircontrol << " decrease: " << cpoint_decrease << " hurtable: " << cpoint_hurtable << " throwvx: " << cpoint_throwvx << " throwvy: " << cpoint_throwvy << " throwvz: " << cpoint_throwvz << " throwinjury: " << cpoint_throwinjury << " cpoint_end: wpoint: kind: " << wpoint_kind << " x: " << wpoint_x << " y: " << wpoint_y << " weaponact: " << wpoint_weaponact << " attacking: " << wpoint_attacking << " cover: " << wpoint_cover << " dvx: " << wpoint_dvx << " dvy: " << wpoint_dvy << " dvz: " << wpoint_dvz << " wpoint_end: ";
+	  for(int itring = 0; itring < 5; ++itring)
+	  NewData << "itr: kind: " << itr_kind[itring] << " x: " << itr_x[itring] << " y: " << itr_y[itring] << " w: " << itr_w[itring] << " h: " << itr_h[itring] << " zwidth: " << itr_zwidth[itring] << " dvx: " << itr_dvx[itring] << " dvy: " << itr_dvy[itring] << " fall: " << itr_fall[itring] << " arest: " << itr_arest[itring] << " vrest: " << itr_vrest[itring] << " respond: " << itr_respond[itring] << " effect " << itr_effect[itring] << " catchingact: " << itr_catchingact1[itring] << " " << itr_catchingact2[itring] << " caughtact: " << itr_caughtact1[itring] << " " << itr_caughtact2[itring] << " bdefend: " << itr_bdefend[itring] << " injury: " << itr_injury[itring] << " itr_end: ";
+	  for(int bdying = 0; bdying < 5; ++bdying)
+	  NewData << "bdy: kind: " << bdy_kind[bdying] << " x: " << bdy_x[bdying] << " y: " << bdy_y[bdying] << " w: " << bdy_w[bdying] << " h: " << bdy_h[bdying] << " bdy_end: ";
+	  NewData << "<frame_end> ";
+	  goto ReTexting;
 	 }
-	 if(RTexting.compare("input_a:") == 0){OldData >> NTexting; hit_a += NTexting % 1000; respond_05 += (NTexting - (NTexting % 1000)) / 1000; goto ReTexting;}
-	 if(RTexting.compare("input_d:") == 0){OldData >> NTexting; hit_a += (NTexting % 1000) * 1000; respond_05 += (NTexting - (NTexting % 1000)) / 10; goto ReTexting;}
-	 if(RTexting.compare("input_j:") == 0){OldData >> NTexting; hit_a += (NTexting % 1000) * 1000000; respond_05 += (NTexting - (NTexting % 1000)) * 10; goto ReTexting;}
-	 if(RTexting.compare("input_fa:") == 0){OldData >> NTexting; hit_d += NTexting % 1000; respond_05 += (NTexting - (NTexting % 1000)) * 1000; goto ReTexting;}
-	 if(RTexting.compare("input_fj:") == 0){OldData >> NTexting; hit_d += (NTexting % 1000) * 1000; respond_04 += (NTexting - (NTexting % 1000)) / 1000; goto ReTexting;}
-	 if(RTexting.compare("input_da:") == 0){OldData >> NTexting; hit_d += (NTexting % 1000) * 1000000; respond_04 += (NTexting - (NTexting % 1000)) / 10; goto ReTexting;}
-	 if(RTexting.compare("input_dj:") == 0){OldData >> NTexting; hit_j += NTexting % 1000; respond_04 += (NTexting - (NTexting % 1000)) * 10; goto ReTexting;}
-	 if(RTexting.compare("input_ua:") == 0){OldData >> NTexting; hit_j += (NTexting % 1000) * 1000; respond_04 += (NTexting - (NTexting % 1000)) * 1000; goto ReTexting;}
-	 if(RTexting.compare("input_uj:") == 0){OldData >> NTexting; hit_j += (NTexting % 1000) * 1000000; respond_03 += (NTexting - (NTexting % 1000)) / 1000; goto ReTexting;}
-	 if(RTexting.compare("input_ja:") == 0){OldData >> NTexting; hit_Fa += NTexting % 1000; respond_03 += (NTexting - (NTexting % 1000)) / 10; goto ReTexting;}
-	 if(RTexting.compare("input_>>:") == 0){OldData >> NTexting; hit_Fa += (NTexting % 1000) * 1000; respond_03 += (NTexting - (NTexting % 1000)) * 10; goto ReTexting;}
-	 if(RTexting.compare("input_<<:") == 0){OldData >> NTexting; hit_Fa += (NTexting % 1000) * 1000000; respond_03 += (NTexting - (NTexting % 1000)) * 1000; goto ReTexting;}
-	 if(RTexting.compare("input_aj:") == 0){OldData >> NTexting; hit_Fj += NTexting % 1000; respond_02 += (NTexting - (NTexting % 1000)) / 1000; goto ReTexting;}
-	 if(RTexting.compare("input_ad:") == 0){OldData >> NTexting; hit_Fj += (NTexting % 1000) * 1000; respond_02 += (NTexting - (NTexting % 1000)) / 10; goto ReTexting;}
-	 if(RTexting.compare("input_dj:") == 0){OldData >> NTexting; hit_Fj += (NTexting % 1000) * 1000000; respond_02 += (NTexting - (NTexting % 1000)) * 10; goto ReTexting;}
-	 if(RTexting.compare("input_<:") == 0){OldData >> NTexting; hit_Da += NTexting % 1000; respond_02 += (NTexting - (NTexting % 1000)) * 1000; goto ReTexting;}
-	 if(RTexting.compare("input_^^:") == 0){OldData >> NTexting; hit_Da += (NTexting % 1000) * 1000; respond_01 += (NTexting - (NTexting % 1000)) / 1000; goto ReTexting;}
-	 if(RTexting.compare("input_vv:") == 0){OldData >> NTexting; hit_Da += (NTexting % 1000) * 1000000; respond_01 += (NTexting - (NTexting % 1000)) / 10; goto ReTexting;}
-	 if(RTexting.compare("x_vel:") == 0){OldData >> NTexting; hit_Dj = NTexting; goto ReTexting;}
-	 if(RTexting.compare("y_vel:") == 0){OldData >> NTexting; hit_Ua = NTexting; goto ReTexting;}
-	 if(RTexting.compare("z_vel:") == 0){OldData >> NTexting; hit_Uj = NTexting; goto ReTexting;}
-	 if(RTexting.compare("itr:") == 0)
-	 {
-	  if(fourtitrfounded) if(!fivetitrfounded){NewData << "itr: respond: " << respond_05 << " "; fivetitrfounded = true; goto ReTexting;}
-	  if(thirditrfounded) if(!fourtitrfounded){NewData << "itr: respond: " << respond_04 << " "; fourtitrfounded = true; goto ReTexting;}
-	  if(seconitrfounded) if(!thirditrfounded){NewData << "itr: respond: " << respond_03 << " "; thirditrfounded = true; goto ReTexting;}
-	  if(firstitrfounded) if(!seconitrfounded){NewData << "itr: respond: " << respond_02 << " "; seconitrfounded = true; goto ReTexting;}
-	  if(!firstitrfounded){NewData << "itr: respond: " << respond_01 << " "; firstitrfounded = true; goto ReTexting;}
-	  goto TextFound;
-	 }
-	 if(RTexting.compare("ex_state:") == 0){RTexting = "hit_ja:"; goto TextFound;}
-	 if(RTexting.compare("ad_state:") == 0){OldData >> NTexting; cpointval = NTexting; goto ReTexting;}
-	 if(RTexting.compare("centerx:") == 0){NewData << RTexting << " "; OldData >> CenX; NewData << CenX << " "; goto ReTexting;}
-	 if(RTexting.compare("centery:") == 0){NewData << RTexting << " "; OldData >> CenY; NewData << CenY - YAxisSingularity << " "; goto ReTexting;}
-	 if(RTexting.compare("cpoint:") == 0){NewData << "cpoint: daction: " << cpointval << " "; cpointfounded = true; while(OldData){OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;} NewData << RTexting << " ";} goto TextEnd;}
-	 if(RTexting.compare("wpoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
-	 if(RTexting.compare("opoint:") == 0){while(OldData){NewData << RTexting << " "; OldData >> RTexting; if(RTexting.compare("y:") == 0){NewData << RTexting << " "; OldData >> NTexting; NTexting -= YAxisSingularity; NewData << NTexting << " "; goto ReTexting;}} goto TextEnd;}
+	 ////////////////////
 	}
     TextFound:
 	NewData << RTexting << " ";
@@ -1023,36 +1248,37 @@
  void right(int vit, char key, char holding){game->objects[vit]->right = key; game->objects[vit]->holding_right = holding;}
  void DJAR(int vit)                         {game->objects[vit]->DrA = 0; game->objects[vit]->DlA = 0; game->objects[vit]->DuA = 0; game->objects[vit]->DdA = 0; game->objects[vit]->DrJ = 0; game->objects[vit]->DlJ = 0; game->objects[vit]->DuJ = 0; game->objects[vit]->DdJ = 0; game->objects[vit]->DJA = 0;}
  
- void Control_MHP(int vit, int agi)            {game->objects[vit]->max_hp = agi;}
- void Control_HP(int vit, int agi)             {game->objects[vit]->hp = agi;}
- void Control_DHP(int vit, int agi)            {game->objects[vit]->dark_hp = agi;}
- void Control_MP(int vit, int agi)             {game->objects[vit]->mp = agi;}
- void Control_X(int vit, int agi)              {game->objects[vit]->x = agi;}
- void Control_Y(int vit, int agi)              {game->objects[vit]->y = agi;}
- void Control_Z(int vit, int agi)              {game->objects[vit]->z = agi;}
- void Control_XR(int vit, float agi)           {game->objects[vit]->x_real = agi;}
- void Control_YR(int vit, float agi)           {game->objects[vit]->y_real = agi;}
- void Control_ZR(int vit, float agi)           {game->objects[vit]->z_real = agi;}
- void Control_VX(int vit, float agi)           {game->objects[vit]->x_velocity = agi;}
- void Control_VY(int vit, float agi)           {game->objects[vit]->y_velocity = agi;}
- void Control_VZ(int vit, float agi)           {game->objects[vit]->z_velocity = agi;}
- void Control_AVX(int vit, float agi)          {game->objects[vit]->x_acceleration = agi;}
- void Control_AVY(int vit, float agi)          {game->objects[vit]->y_acceleration = agi;}
- void Control_AVZ(int vit, float agi)          {game->objects[vit]->z_acceleration = agi;}
- void Control_Frame1(int vit, int agi)         {game->objects[vit]->frame1 = agi;}
- void Control_Facing(int vit, int agi)         {if(agi > 125){agi = 125;} else {if(agi < -125) agi = -125;} game->objects[vit]->facing = static_cast<char>(agi);}
- void Control_Team(int vit, int agi)           {if(agi > 125){agi = 125;} else {if(agi < -125) agi = -125;} game->objects[vit]->team = static_cast<char>(agi);}
- void Control_Shake(int vit, int agi)          {game->objects[vit]->shake = agi;}
- void Control_Fall(int vit, int agi)           {game->objects[vit]->fall = agi;}
- void Control_Blink(int vit, int agi)          {game->objects[vit]->blink = agi;}
- void Control_WaitCounter(int vit, int agi)    {game->objects[vit]->wait_counter = agi;}
- void Control_Walk(int vit, int agi)           {game->objects[vit]->move_counter = agi;}
- void Control_Run(int vit, int agi)            {game->objects[vit]->run_counter = agi;}
- void Control_FCDAct(int vit, int agi, int dex){game->objects[vit]->data->frames[agi].cpoint.daction = dex;}
- void Control_FWait(int vit, int agi, int dex) {game->objects[vit]->data->frames[agi].wait = dex;}
- void Control_FOKind(int vit, int agi, int dex){game->objects[vit]->data->frames[agi].opoint.kind = dex;}
- void Control_Arest(int vit, int agi)          {game->objects[vit]->arest = agi;}
- void Control_Vrest(int vit, int agi, int dex) {if(dex > 125){dex = 125;} else {if(dex < -125) dex = -125;} game->objects[vit]->vrests[agi] = static_cast<char>(dex);}
+ void Control_MHP(int vit, int agi)                 {game->objects[vit]->max_hp = agi;}
+ void Control_HP(int vit, int agi)                  {game->objects[vit]->hp = agi;}
+ void Control_DHP(int vit, int agi)                 {game->objects[vit]->dark_hp = agi;}
+ void Control_MP(int vit, int agi)                  {game->objects[vit]->mp = agi;}
+ void Control_X(int vit, int agi)                   {game->objects[vit]->x = agi;}
+ void Control_Y(int vit, int agi)                   {game->objects[vit]->y = agi;}
+ void Control_Z(int vit, int agi)                   {game->objects[vit]->z = agi;}
+ void Control_XR(int vit, float agi)                {game->objects[vit]->x_real = agi;}
+ void Control_YR(int vit, float agi)                {game->objects[vit]->y_real = agi;}
+ void Control_ZR(int vit, float agi)                {game->objects[vit]->z_real = agi;}
+ void Control_VX(int vit, float agi)                {game->objects[vit]->x_velocity = agi;}
+ void Control_VY(int vit, float agi)                {game->objects[vit]->y_velocity = agi;}
+ void Control_VZ(int vit, float agi)                {game->objects[vit]->z_velocity = agi;}
+ void Control_AVX(int vit, float agi)               {game->objects[vit]->x_acceleration = agi;}
+ void Control_AVY(int vit, float agi)               {game->objects[vit]->y_acceleration = agi;}
+ void Control_AVZ(int vit, float agi)               {game->objects[vit]->z_acceleration = agi;}
+ void Control_Frame1(int vit, int agi)              {game->objects[vit]->frame1 = agi;}
+ void Control_Facing(int vit, int agi)              {if(agi > 125){agi = 125;} else {if(agi < -125) agi = -125;} game->objects[vit]->facing = static_cast<char>(agi);}
+ void Control_Team(int vit, int agi)                {if(agi > 125){agi = 125;} else {if(agi < -125) agi = -125;} game->objects[vit]->team = static_cast<char>(agi);}
+ void Control_Shake(int vit, int agi)               {game->objects[vit]->shake = agi;}
+ void Control_Fall(int vit, int agi)                {game->objects[vit]->fall = agi;}
+ void Control_Blink(int vit, int agi)               {game->objects[vit]->blink = agi;}
+ void Control_WaitCounter(int vit, int agi)         {game->objects[vit]->wait_counter = agi;}
+ void Control_Walk(int vit, int agi)                {game->objects[vit]->move_counter = agi;}
+ void Control_Run(int vit, int agi)                 {game->objects[vit]->run_counter = agi;}
+ void Control_PicNReserve(int vit, int agi, int dex){game->objects[vit]->pic_gain = agi; game->objects[vit]->reserve = dex;}
+ void Control_FCDAct(int vit, int agi, int dex)     {game->objects[vit]->data->frames[agi].cpoint.daction = dex;}
+ void Control_FWait(int vit, int agi, int dex)      {game->objects[vit]->data->frames[agi].wait = dex;}
+ void Control_FOKind(int vit, int agi, int dex)     {game->objects[vit]->data->frames[agi].opoint.kind = dex;}
+ void Control_Arest(int vit, int agi)               {game->objects[vit]->arest = agi;}
+ void Control_Vrest(int vit, int agi, int dex)      {if(dex > 125){dex = 125;} else {if(dex < -125) dex = -125;} game->objects[vit]->vrests[agi] = static_cast<char>(dex);}
  //void Control_InputNone(int vit)               {game->objects[vit]->A = 0; game->objects[vit]->D = 0; game->objects[vit]->J = 0; game->objects[vit]->up = 0; game->objects[vit]->left = 0; game->objects[vit]->down = 0; game->objects[vit]->right = 0; game->objects[vit]->DrA = 0; game->objects[vit]->DlA = 0; game->objects[vit]->DuA = 0; game->objects[vit]->DdA = 0; game->objects[vit]->DrJ = 0; game->objects[vit]->DlJ = 0; game->objects[vit]->DuJ = 0; game->objects[vit]->DdJ = 0; game->objects[vit]->DJA = 0;}
 
  void Control_InputNone(int vit)               {game->objects[vit]->A = 0; game->objects[vit]->holding_a = 0; game->objects[vit]->D = 0; game->objects[vit]->holding_d = 0; game->objects[vit]->J = 0; game->objects[vit]->holding_j = 0; game->objects[vit]->up = 0; game->objects[vit]->holding_up = 0; game->objects[vit]->left = 0; game->objects[vit]->holding_left = 0; game->objects[vit]->down = 0; game->objects[vit]->holding_down = 0; game->objects[vit]->right = 0; game->objects[vit]->holding_right = 0; game->objects[vit]->DrA = 0; game->objects[vit]->DlA = 0; game->objects[vit]->DuA = 0; game->objects[vit]->DdA = 0; game->objects[vit]->DrJ = 0; game->objects[vit]->DlJ = 0; game->objects[vit]->DuJ = 0; game->objects[vit]->DdJ = 0; game->objects[vit]->DJA = 0;}
@@ -1465,6 +1691,7 @@
   ScriptEngine->RegisterGlobalFunction("void Control_WaitCounter(int vit, int agi)", asFUNCTION(Control_WaitCounter), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void Control_Walk(int vit, int agi)", asFUNCTION(Control_Walk), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void Control_Run(int vit, int agi)", asFUNCTION(Control_Run), asCALL_CDECL);
+  ScriptEngine->RegisterGlobalFunction("void Control_PicNReserve(int vit, int agi, int dex)", asFUNCTION(Control_PicNReserve), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void Control_FWait(int vit, int agi, int dex)", asFUNCTION(Control_FWait), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void Control_FCDAct(int vit, int agi, int dex)", asFUNCTION(Control_FCDAct), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void Control_FOKind(int vit, int agi, int dex)", asFUNCTION(Control_FOKind), asCALL_CDECL);
