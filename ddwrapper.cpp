@@ -97,6 +97,7 @@
  int current_stage;
  int background = -1;
  int current_phase_count;
+ int singularity;
  char stage_clear;
  char VFPPath[MAX_PATH];
  short BufferSize;
@@ -246,6 +247,13 @@
  void cleanup();
  int (__stdcall *AI_o)(int target_num, int object_num, int x, int y, int z, int a, int b);
  int (__stdcall *AIa_o)(int object_num, int unkwn1);
+ int Cnvrt_F_I(float vit){return static_cast<int>(vit);}
+ int Cnvrt_D_I(double vit){return static_cast<int>(vit);}
+ double Cnvrt_F_D(float vit){return static_cast<double>(vit);}
+ double Cnvrt_I_D(int vit){return static_cast<double>(vit);}
+ float Cnvrt_D_F(double vit){return static_cast<float>(vit);}
+ float Cnvrt_I_F(int vit){return static_cast<float>(vit);}
+ double Cnvrt_Round(double vit){return round(vit);}
 
  bool mEsG = false;
  int dirExists(const char *path){struct stat info; if(stat(path, &info) != 0) return 0; else if(info.st_mode & S_IFDIR) return 1; else return 0;}
@@ -302,8 +310,8 @@
 	 {
 	  int frame_num = 0; std::string frame_name;
 	  OldData >> frame_num >> frame_name;
-	  std::string main_sound; bool main_sound_ex = false;
-	  int main_pic = 0; int main_state = 0; int main_wait = 0; int main_next = 0; int main_dvz = 0; int main_centerx = 0; int main_centery = 0;
+	  std::string main_sound; bool main_sound_ex = false; bool main_blood_ex = false;
+	  int main_pic = 0; int main_state = 0; int main_wait = 0; int main_next = 0; int main_dvx = 550; int main_dvy = 550; int main_dvz = 550; int main_centerx = 0; int main_centery = 0; int main_blood_x = 0; int main_blood_y = 0; int main_mp = 0;
 	  int main_hit_a = 0; int main_hit_d = 0; int main_hit_j = 0; int main_hit_fa = 0; int main_hit_fj = 0; int main_hit_da = 0; int main_hit_dj = 0; int main_hit_ua = 0; int main_hit_uj = 0; int main_hit_ja = 0;
 	  int opoint_kind = 0; int opoint_x = 0; int opoint_y = 0; int opoint_oid = 0; int opoint_action = 0; int opoint_facing = 0; int opoint_dvx = 0; int opoint_dvy = 0;
 	  int cpoint_kind = 0; int cpoint_x = 0; int cpoint_y = 0; int cpoint_vaction = 0; int cpoint_aaction = 0; int cpoint_daction = 0; int cpoint_jaction = 0; int cpoint_taction = 0;
@@ -316,6 +324,7 @@
 	  int cpoint_throwvy = 0;
 	  int cpoint_throwvz = 0;
 	  int cpoint_throwinjury = 0;
+	  int wpoint_count = 0;
 	  int wpoint_kind = 0; int wpoint_x = 0; int wpoint_y = 0; int wpoint_weaponact = 0; int wpoint_attacking = 0; int wpoint_cover = 0; int wpoint_dvx = 0; int wpoint_dvy = 0; int wpoint_dvz = 0;
 	  int itr_count = 0;
 	  int itr_kind[5] = {12, 12, 12, 12, 12}; int itr_x[5] = {0, 0, 0, 0, 0}; int itr_y[5] = {0, 0, 0, 0, 0}; int itr_w[5] = {0, 0, 0, 0, 0}; int itr_h[5] = {0, 0, 0, 0, 0};
@@ -340,17 +349,40 @@
 	   OldData >> RTexting;
 	   RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0)
 	   {
-		if(RTexting.compare("#PerfectBdy") == 0)
+		if(RTexting.compare("#C:PerfectBdy") == 0)
 		{
-	     int bdies;
 		 if(bdy_count % 2 == 0)
 		 {
-		  bdies = bdy_count / 2;
+		  int bdies = bdy_count / 2;
+		  bdy_kind[bdies] += 400100005;
+		  bdy_x[bdies] += 100010;
+		  bdy_y[bdies] += 100070000;
 		 } else
 		 {
-		  bdies = (bdy_count - 1) / 2;
+		  int bdies = (bdy_count - 1) / 2;
+		  bdy_w[bdies] += 400100005;
+		  bdy_h[bdies] += 100010;
+		  switch(bdies)
+		  {
+		   case 0:
+		    cpoint_dircontrol = 100070000;
+		   break;
+		   case 1:
+		    cpoint_throwvx = 100070000;
+		   break;
+		   case 2:
+		    cpoint_throwvy = 100070000;
+		   break;
+		   case 3:
+		    cpoint_throwvz = 100070000;
+		   break;
+		   case 4:
+		    cpoint_throwinjury = 100070000;
+		   break;
+		   default: break;
+		  }
 		 }
-			bdy_kind[bdy_count] = 7; bdy_count += 1; goto FCommandFound;
+	     bdy_count += 1; goto FCommandFound;
 		}
 	    if(RTexting.compare("#Endl") == 0) goto TextEnd;
 	    FCommandFound: getline(OldData, RTexting); continue;
@@ -359,70 +391,88 @@
 	   {
 		if(itr_count == 10) itr_count = 0;
 		bool x_neg = false; bool y_neg = false; bool z_neg = false; int itries;
-		if(bdy_count % 2 == 0)
+		if(itr_count % 2 == 0)
 		{
 		 itries = itr_count / 2;
 		 while(OldData)
 		 {
 		  OldData >> RTexting;
-	      if(RTexting.compare("kind:") == 0){OldData >> NTexting; itr_vrest[itries] += NTexting * 10000000; continue;}
-		  if(RTexting.compare("x:") == 0){OldData >> NTexting; if(NTexting < 0){x_neg = true; itr_x[itries] -= NTexting;} else {itr_x[itries] += NTexting;} continue;}
-		  if(RTexting.compare("y:") == 0){OldData >> NTexting; if(NTexting < 0){y_neg = true; itr_y[itries] -= NTexting;} else {itr_y[itries] += NTexting;} continue;}
-		  if(RTexting.compare("z:") == 0){OldData >> NTexting; if(NTexting < 0){z_neg = true; itr_w[itries] -= NTexting;} else {itr_w[itries] += NTexting;} continue;}
-	      if(RTexting.compare("w:") == 0){OldData >> NTexting; itr_x[itries] += NTexting * 10000; continue;}
-	      if(RTexting.compare("h:") == 0){OldData >> NTexting; itr_y[itries] += NTexting * 10000; continue;}
-	      if(RTexting.compare("l:") == 0){OldData >> NTexting; itr_w[itries] += NTexting * 10000; continue;}
-	      if(RTexting.compare("shape:") == 0){OldData >> NTexting; itr_y[itries] += NTexting * 100000000; continue;}
-	      if(RTexting.compare("x-ax_rot:") == 0){OldData >> NTexting; itr_h[itries] += NTexting; continue;}
-	      if(RTexting.compare("y-ax_rot:") == 0){OldData >> NTexting; itr_h[itries] += NTexting * 100; continue;}
-	      if(RTexting.compare("z-ax_rot:") == 0){OldData >> NTexting; itr_h[itries] += NTexting * 10000; continue;}
-	      if(RTexting.compare("starting:") == 0){OldData >> NTexting; itr_h[itries] += NTexting * 1000000; continue;}
-	      if(RTexting.compare("spark:") == 0){OldData >> NTexting; itr_h[itries] += NTexting * 10000000; continue;}
-	      if(RTexting.compare("respond:") == 0){OldData >> NTexting; itr_dvx[itries] += NTexting; continue;}
-	      if(RTexting.compare("injury_ef:") == 0){OldData >> NTexting; itr_dvx[itries] += NTexting * 1000; continue;}
-	      if(RTexting.compare("bdefend:") == 0){OldData >> NTexting; itr_vrest[itries] += NTexting * 10000; continue;}
-	      if(RTexting.compare("damage:") == 0){OldData >> NTexting; itr_dvy[itries] = NTexting; continue;}
-	      if(RTexting.compare("a_rest:") == 0){OldData >> NTexting; itr_fall[itries] += NTexting; continue;}
-	      if(RTexting.compare("v_rest:") == 0){OldData >> NTexting; itr_fall[itries] += NTexting * 1000; continue;}
-	      if(RTexting.compare("x_vel:") == 0){OldData >> NTexting; itr_arest[itries] += (NTexting % 10000); itr_fall[itries] += (NTexting - (NTexting % 10000)) * 100; continue;}
-	      if(RTexting.compare("y_vel:") == 0){OldData >> NTexting; itr_vrest[itries] += (NTexting % 10000); itr_fall[itries] += (NTexting - (NTexting % 10000)) * 1000; continue;}
-	      if(RTexting.compare("z_vel:") == 0){OldData >> NTexting; itr_arest[itries] += (NTexting % 10000) * 10000; itr_fall[itries] += (NTexting - (NTexting % 10000)) * 1000; continue;}
-	      if(RTexting.compare("effect:") == 0){OldData >> NTexting; itr_w[itries] += NTexting * 100000000; continue;}
+		  // kind: XX x: XXXXX y: XXXX z: XXXX w: XXXX h: XXXX l: XXXX shape: X post: XX
+		  // x-ax_rot: XX y-ax_rot: XX z-ax_rot: XX spark: X respond: XXX injury_ef: XYYYY bdefend: XXX effect: X damage: %
+		  // a_rest: XXX v_rest: XXX x_vel: XYYYY y_vel: XYYYY z_vel: XYYYY
+		  // 
+          // itr_x => kind:, x-ax_rot:, y-ax_rot:, z-ax_rot:, shape:.
+		  // itr_y => x:, w:.
+		  // itr_w => y:, h:, spark:.
+		  // itr_h => z:, l:, element:.
+		  // itr_dvx => respond:, a_rest:, v_rest:
+		  // itr_dvy => damage:
+		  // itr_fall => injury_ef:, bdefend:, x_vel:(X).
+		  // itr_arest => x_vel:(YYYY), y_vel:.
+		  // itr_vrest => z_vel:, post:, effect:.
+	      if(RTexting.compare("kind:") == 0)     {OldData >> NTexting; itr_x[itries] += NTexting; continue;}
+		  if(RTexting.compare("x:") == 0)        {OldData >> NTexting; if(NTexting < 0){x_neg = true; itr_y[itries] -= NTexting;} else {itr_y[itries] += NTexting;} continue;}
+		  if(RTexting.compare("y:") == 0)        {OldData >> NTexting; if(NTexting < 0){y_neg = true; itr_w[itries] -= NTexting;} else {itr_w[itries] += NTexting;} continue;}
+		  if(RTexting.compare("z:") == 0)        {OldData >> NTexting; if(NTexting < 0){z_neg = true; itr_h[itries] -= NTexting;} else {itr_h[itries] += NTexting;} continue;}
+	      if(RTexting.compare("w:") == 0)        {OldData >> NTexting; itr_y[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("h:") == 0)        {OldData >> NTexting; itr_w[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("l:") == 0)        {OldData >> NTexting; itr_h[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("post:") == 0)     {OldData >> NTexting; itr_vrest[itries] += NTexting * 100000; continue;}
+	      if(RTexting.compare("shape:") == 0)    {OldData >> NTexting; itr_x[itries] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("x-ax_rot:") == 0) {OldData >> NTexting; itr_x[itries] += NTexting * 100; continue;}
+	      if(RTexting.compare("y-ax_rot:") == 0) {OldData >> NTexting; itr_x[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("z-ax_rot:") == 0) {OldData >> NTexting; itr_x[itries] += NTexting * 1000000; continue;}
+	      if(RTexting.compare("spark:") == 0)    {OldData >> NTexting; itr_w[itries] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("element:") == 0)  {OldData >> NTexting; itr_h[itries] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("respond:") == 0)  {OldData >> NTexting; itr_dvx[itries] += NTexting; continue;}
+	      if(RTexting.compare("injury_ef:") == 0){OldData >> NTexting; itr_fall[itries] += NTexting; continue;}
+	      if(RTexting.compare("bdefend:") == 0)  {OldData >> NTexting; itr_fall[itries] += NTexting * 100000; continue;}
+	      if(RTexting.compare("effect:") == 0)   {OldData >> NTexting; itr_vrest[itries] += NTexting * 10000000; continue;}
+	      if(RTexting.compare("damage:") == 0)   {OldData >> NTexting; itr_dvy[itries] = NTexting; continue;}
+	      if(RTexting.compare("a_rest:") == 0)   {OldData >> NTexting; itr_dvx[itries] += NTexting * 1000; continue;}
+	      if(RTexting.compare("v_rest:") == 0)   {OldData >> NTexting; itr_dvx[itries] += NTexting * 1000000; continue;}
+	      if(RTexting.compare("x_vel:") == 0)    {OldData >> NTexting; itr_arest[itries] += (NTexting % 10000); itr_fall[itries] += (NTexting - (NTexting % 10000)) * 1000; continue;}
+	      if(RTexting.compare("y_vel:") == 0)    {OldData >> NTexting; itr_arest[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("z_vel:") == 0)    {OldData >> NTexting; itr_vrest[itries] += NTexting; continue;}
 	      if(RTexting.compare("itr_end:") == 0) goto Itr_End1;
+		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 		 }
-		 goto TextEnd; Itr_End1: itr_count += 1; if(x_neg){if(y_neg){if(z_neg){itr_x[itries] += 700000000;} else {itr_x[itries] += 400000000;}} else {if(z_neg){itr_x[itries] += 500000000;} else {itr_x[itries] += 100000000;}}} else {if(y_neg){if(z_neg){itr_x[itries] += 600000000;} else {itr_x[itries] += 200000000;}} else {if(z_neg){itr_x[itries] += 300000000;} else {continue;}}} continue;
+		 goto TextEnd; Itr_End1: itr_count += 1; if(x_neg){if(y_neg){if(z_neg){itr_y[itries] += 700000000;} else {itr_y[itries] += 400000000;}} else {if(z_neg){itr_y[itries] += 500000000;} else {itr_y[itries] += 100000000;}}} else {if(y_neg){if(z_neg){itr_y[itries] += 600000000;} else {itr_y[itries] += 200000000;}} else {if(z_neg){itr_y[itries] += 300000000;} else {continue;}}} continue;
 		} else
 		{
 		 itries = (itr_count - 1) / 2; int Requsive = 0;
 		 while(OldData)
 		 {
 		  OldData >> RTexting;
-	      if(RTexting.compare("kind:") == 0){OldData >> NTexting; Requsive += NTexting * 10000000; continue;}
-		  if(RTexting.compare("x:") == 0){OldData >> NTexting; if(NTexting < 0){x_neg = true; itr_effect[itries] -= NTexting;} else {itr_effect[itries] += NTexting;} continue;}
-		  if(RTexting.compare("y:") == 0){OldData >> NTexting; if(NTexting < 0){y_neg = true; itr_catchingact1[itries] -= NTexting;} else {itr_catchingact1[itries] += NTexting;} continue;}
-		  if(RTexting.compare("z:") == 0){OldData >> NTexting; if(NTexting < 0){z_neg = true; itr_catchingact2[itries] -= NTexting;} else {itr_catchingact2[itries] += NTexting;} continue;}
-	      if(RTexting.compare("w:") == 0){OldData >> NTexting; itr_effect[itries] += NTexting * 10000; continue;}
-	      if(RTexting.compare("h:") == 0){OldData >> NTexting; itr_catchingact1[itries] += NTexting * 10000; continue;}
-	      if(RTexting.compare("l:") == 0){OldData >> NTexting; itr_catchingact2[itries] += NTexting * 10000; continue;}
-	      if(RTexting.compare("shape:") == 0){OldData >> NTexting; itr_catchingact1[itries] += NTexting * 100000000; continue;}
-	      if(RTexting.compare("x-ax_rot:") == 0){OldData >> NTexting; itr_caughtact1[itries] += NTexting; continue;}
-	      if(RTexting.compare("y-ax_rot:") == 0){OldData >> NTexting; itr_caughtact1[itries] += NTexting * 100; continue;}
-	      if(RTexting.compare("z-ax_rot:") == 0){OldData >> NTexting; itr_caughtact1[itries] += NTexting * 10000; continue;}
-	      if(RTexting.compare("starting:") == 0){OldData >> NTexting; itr_caughtact1[itries] += NTexting * 1000000; continue;}
-	      if(RTexting.compare("spark:") == 0){OldData >> NTexting; itr_caughtact1[itries] += NTexting * 10000000; continue;}
-	      if(RTexting.compare("respond:") == 0){OldData >> NTexting; itr_caughtact2[itries] += NTexting; continue;}
-	      if(RTexting.compare("injury_ef:") == 0){OldData >> NTexting; itr_caughtact2[itries] += NTexting * 1000; continue;}
-	      if(RTexting.compare("bdefend:") == 0){OldData >> NTexting; Requsive += NTexting * 10000; continue;}
-	      if(RTexting.compare("damage:") == 0){OldData >> NTexting; itr_bdefend[itries] = NTexting; continue;}
-	      if(RTexting.compare("a_rest:") == 0){OldData >> NTexting; itr_injury[itries] += NTexting; continue;}
-	      if(RTexting.compare("v_rest:") == 0){OldData >> NTexting; itr_injury[itries] += NTexting * 1000; continue;}
-	      if(RTexting.compare("x_vel:") == 0){OldData >> NTexting; itr_zwidth[itries] += (NTexting % 10000); itr_injury[itries] += (NTexting - (NTexting % 10000)) * 100; continue;}
-	      if(RTexting.compare("y_vel:") == 0){OldData >> NTexting; Requsive += (NTexting % 10000); itr_injury[itries] += (NTexting - (NTexting % 10000)) * 1000; continue;}
-	      if(RTexting.compare("z_vel:") == 0){OldData >> NTexting; itr_zwidth[itries] += (NTexting % 10000) * 10000; itr_injury[itries] += (NTexting - (NTexting % 10000)) * 1000; continue;}
-	      if(RTexting.compare("effect:") == 0){OldData >> NTexting; itr_catchingact2[itries] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("kind:") == 0)     {OldData >> NTexting; itr_effect[itries] += NTexting; continue;}
+		  if(RTexting.compare("x:") == 0)        {OldData >> NTexting; if(NTexting < 0){x_neg = true; itr_catchingact1[itries] -= NTexting;} else {itr_catchingact1[itries] += NTexting;} continue;}
+		  if(RTexting.compare("y:") == 0)        {OldData >> NTexting; if(NTexting < 0){y_neg = true; itr_catchingact2[itries] -= NTexting;} else {itr_catchingact2[itries] += NTexting;} continue;}
+		  if(RTexting.compare("z:") == 0)        {OldData >> NTexting; if(NTexting < 0){z_neg = true; itr_caughtact1[itries] -= NTexting;} else {itr_caughtact1[itries] += NTexting;} continue;}
+	      if(RTexting.compare("w:") == 0)        {OldData >> NTexting; itr_catchingact1[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("h:") == 0)        {OldData >> NTexting; itr_catchingact2[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("l:") == 0)        {OldData >> NTexting; itr_caughtact1[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("post:") == 0)     {OldData >> NTexting; Requsive += NTexting * 100000; continue;}
+	      if(RTexting.compare("shape:") == 0)    {OldData >> NTexting; itr_effect[itries] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("x-ax_rot:") == 0) {OldData >> NTexting; itr_effect[itries] += NTexting * 100; continue;}
+	      if(RTexting.compare("y-ax_rot:") == 0) {OldData >> NTexting; itr_effect[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("z-ax_rot:") == 0) {OldData >> NTexting; itr_effect[itries] += NTexting * 1000000; continue;}
+	      if(RTexting.compare("spark:") == 0)    {OldData >> NTexting; itr_catchingact2[itries] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("element:") == 0)  {OldData >> NTexting; itr_caughtact1[itries] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("respond:") == 0)  {OldData >> NTexting; itr_caughtact2[itries] += NTexting; continue;}
+	      if(RTexting.compare("injury_ef:") == 0){OldData >> NTexting; itr_injury[itries] += NTexting; continue;}
+	      if(RTexting.compare("bdefend:") == 0)  {OldData >> NTexting; itr_injury[itries] += NTexting * 100000; continue;}
+	      if(RTexting.compare("effect:") == 0)   {OldData >> NTexting; Requsive += NTexting * 10000000; continue;}
+	      if(RTexting.compare("damage:") == 0)   {OldData >> NTexting; itr_bdefend[itries] = NTexting; continue;}
+	      if(RTexting.compare("a_rest:") == 0)   {OldData >> NTexting; itr_caughtact2[itries] += NTexting * 1000; continue;}
+	      if(RTexting.compare("v_rest:") == 0)   {OldData >> NTexting; itr_caughtact2[itries] += NTexting * 1000000; continue;}
+	      if(RTexting.compare("x_vel:") == 0)    {OldData >> NTexting; itr_zwidth[itries] += (NTexting % 10000); itr_injury[itries] += (NTexting - (NTexting % 10000)) * 1000; continue;}
+	      if(RTexting.compare("y_vel:") == 0)    {OldData >> NTexting; itr_zwidth[itries] += NTexting * 10000; continue;}
+	      if(RTexting.compare("z_vel:") == 0)    {OldData >> NTexting; Requsive += NTexting; continue;}
 	      if(RTexting.compare("itr_end:") == 0) goto Itr_End2;
+		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 		 }
 		 goto TextEnd;
+	     Itr_End2:
 		 switch(itries)
 		 {
 		  case 0:
@@ -432,7 +482,7 @@
 		   cpoint_aaction = Requsive;
 		  break;
 		  case 2:
-		   cpoint_daction = Requsive;
+		   wpoint_dvx = Requsive;
 		  break;
 		  case 3:
 		   cpoint_jaction = Requsive;
@@ -442,7 +492,7 @@
 		  break;
 		  default: break;
 		 }
-	     Itr_End2: itr_count += 1; if(x_neg){if(y_neg){if(z_neg){itr_effect[itries] += 700000000;} else {itr_effect[itries] += 400000000;}} else {if(z_neg){itr_effect[itries] += 500000000;} else {itr_effect[itries] += 100000000;}}} else {if(y_neg){if(z_neg){itr_effect[itries] += 600000000;} else {itr_effect[itries] += 200000000;}} else {if(z_neg){itr_effect[itries] += 300000000;} else {continue;}}} continue;
+		 itr_count += 1; if(x_neg){if(y_neg){if(z_neg){itr_catchingact1[itries] += 700000000;} else {itr_catchingact1[itries] += 400000000;}} else {if(z_neg){itr_catchingact1[itries] += 500000000;} else {itr_catchingact1[itries] += 100000000;}}} else {if(y_neg){if(z_neg){itr_catchingact1[itries] += 600000000;} else {itr_catchingact1[itries] += 200000000;}} else {if(z_neg){itr_catchingact1[itries] += 300000000;} else {continue;}}} continue;
 		}
 	   }
 	   if(RTexting.compare("bdy:") == 0)
@@ -455,78 +505,60 @@
 		 while(OldData)
 		 {
 		  OldData >> RTexting;
-		  if(RTexting.compare("x:") == 0)    {OldData >> NTexting; if(NTexting < 0){x_neg = true; bdy_kind[bdies] -= NTexting;} else {bdy_kind[bdies] += NTexting;} continue;}
-		  if(RTexting.compare("y:") == 0)    {OldData >> NTexting; if(NTexting < 0){y_neg = true; bdy_x[bdies] -= NTexting;} else {bdy_x[bdies] += NTexting;} continue;}
-		  if(RTexting.compare("z:") == 0)    {OldData >> NTexting; if(NTexting < 0){z_neg = true; bdy_y[bdies] -= NTexting;} else {bdy_y[bdies] += NTexting;} continue;}
-	      if(RTexting.compare("w:") == 0)    {OldData >> NTexting; bdy_kind[bdies] += NTexting * 10000; continue;}
-	      if(RTexting.compare("h:") == 0)    {OldData >> NTexting; bdy_x[bdies] += NTexting * 10000; continue;}
-	      if(RTexting.compare("l:") == 0)    {OldData >> NTexting; bdy_y[bdies] += NTexting * 10000; continue;}
-	      if(RTexting.compare("shape:") == 0){OldData >> NTexting; bdy_x[bdies] += NTexting * 100000000; continue;}
+		  if(RTexting.compare("x:") == 0)       {OldData >> NTexting; if(NTexting < 0){x_neg = true; bdy_kind[bdies] -= NTexting;} else {bdy_kind[bdies] += NTexting;} continue;}
+		  if(RTexting.compare("y:") == 0)       {OldData >> NTexting; if(NTexting < 0){y_neg = true; bdy_x[bdies] -= NTexting;} else {bdy_x[bdies] += NTexting;} continue;}
+		  if(RTexting.compare("z:") == 0)       {OldData >> NTexting; if(NTexting < 0){z_neg = true; bdy_y[bdies] -= NTexting;} else {bdy_y[bdies] += NTexting;} continue;}
+	      if(RTexting.compare("w:") == 0)       {OldData >> NTexting; bdy_kind[bdies] += NTexting * 10000; continue;}
+	      if(RTexting.compare("h:") == 0)       {OldData >> NTexting; bdy_x[bdies] += NTexting * 10000; continue;}
+	      if(RTexting.compare("l:") == 0)       {OldData >> NTexting; bdy_y[bdies] += NTexting * 10000; continue;}
+	      if(RTexting.compare("shape:") == 0)   {OldData >> NTexting; bdy_x[bdies] += NTexting * 100000000; continue;}
+	      if(RTexting.compare("post:") == 0)    {OldData >> NTexting; bdy_y[bdies] += (NTexting % 10) * 100000000; wpoint_dvz += Cnvrt_D_I(Cnvrt_I_D(NTexting - (NTexting % 10)) * 0.1 * Cnvrt_I_D(10 ^ bdy_count)); continue;}
 	      if(RTexting.compare("bdy_end:") == 0) goto Bdy_End;
+		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 		 }
+		NewData << "#eeee#";
 		 goto TextEnd; Bdy_End: bdy_count += 1; if(x_neg){if(y_neg){if(z_neg){bdy_kind[bdies] += 700000000;} else {bdy_kind[bdies] += 400000000;}} else {if(z_neg){bdy_kind[bdies] += 500000000;} else {bdy_kind[bdies] += 100000000;}}} else {if(y_neg){if(z_neg){bdy_kind[bdies] += 600000000;} else {bdy_kind[bdies] += 200000000;}} else {if(z_neg){bdy_kind[bdies] += 300000000;} else {continue;}}} continue;
 		} else
 		{
+		 int Requsive = 0;
 		 bdies = (bdy_count - 1) / 2;
 		 while(OldData)
 		 {
 		  OldData >> RTexting;
-		  if(RTexting.compare("x:") == 0){OldData >> NTexting; if(NTexting < 0){x_neg = true; bdy_w[bdies] -= NTexting;} else {bdy_w[bdies] += NTexting;} continue;}
-		  if(RTexting.compare("y:") == 0){OldData >> NTexting; if(NTexting < 0){y_neg = true; bdy_h[bdies] -= NTexting;} else {bdy_h[bdies] += NTexting;} continue;}
-		  if(RTexting.compare("z:") == 0)
-		  {
-		   OldData >> NTexting;
-		   switch(bdies)
-		   {
-		    case 0:
-		     if(NTexting < 0){z_neg = true; cpoint_dircontrol -= NTexting;} else {cpoint_dircontrol += NTexting;}
-			break;
-		    case 1:
-		     if(NTexting < 0){z_neg = true; cpoint_throwvx -= NTexting;} else {cpoint_throwvx += NTexting;}
-			break;
-		    case 2:
-		     if(NTexting < 0){z_neg = true; cpoint_throwvy -= NTexting;} else {cpoint_throwvy += NTexting;}
-			break;
-		    case 3:
-		     if(NTexting < 0){z_neg = true; cpoint_throwvz -= NTexting;} else {cpoint_throwvz += NTexting;}
-			break;
-		    case 4:
-		     if(NTexting < 0){z_neg = true; cpoint_throwinjury -= NTexting;} else {cpoint_throwinjury += NTexting;}
-			break;
-		    default: break;
-		   }
-		   continue;
-		  }
-	      if(RTexting.compare("w:") == 0){OldData >> NTexting; bdy_w[bdies] += NTexting * 10000; continue;}
-	      if(RTexting.compare("h:") == 0){OldData >> NTexting; bdy_h[bdies] += NTexting * 10000; continue;}
-	      if(RTexting.compare("l:") == 0)
-		  {
-		   OldData >> NTexting;
-		   switch(bdies)
-		   {
-		    case 0:
-	         cpoint_dircontrol += NTexting * 10000;
-			break;
-		    case 1:
-	         cpoint_throwvx += NTexting * 10000;
-			break;
-		    case 2:
-	         cpoint_throwvy += NTexting * 10000;
-			break;
-		    case 3:
-	         cpoint_throwvz += NTexting * 10000;
-			break;
-		    case 4:
-	         cpoint_throwinjury += NTexting * 10000;
-			break;
-		    default: break;
-		   }
-		   continue;
-		  }
-	      if(RTexting.compare("shape:") == 0){OldData >> NTexting; bdy_h[bdies] += NTexting * 100000000; continue;}
+		  if(RTexting.compare("x:") == 0)       {OldData >> NTexting; if(NTexting < 0){x_neg = true; bdy_w[bdies] -= NTexting;} else {bdy_w[bdies] += NTexting;} continue;}
+		  if(RTexting.compare("y:") == 0)       {OldData >> NTexting; if(NTexting < 0){y_neg = true; bdy_h[bdies] -= NTexting;} else {bdy_h[bdies] += NTexting;} continue;}
+		  if(RTexting.compare("z:") == 0)       {OldData >> NTexting; if(NTexting < 0){z_neg = true; Requsive -= NTexting;} else {Requsive += NTexting;} continue;}
+	      if(RTexting.compare("w:") == 0)       {OldData >> NTexting; bdy_w[bdies] += NTexting * 10000; continue;}
+	      if(RTexting.compare("h:") == 0)       {OldData >> NTexting; bdy_h[bdies] += NTexting * 10000; continue;}
+	      if(RTexting.compare("l:") == 0)       {OldData >> NTexting; Requsive += NTexting * 10000; continue;}
+	      if(RTexting.compare("shape:") == 0)   {OldData >> NTexting; bdy_h[bdies] += NTexting * 100000000; continue;}
+		  if(RTexting.compare("post:") == 0){OldData >> NTexting; Requsive += (NTexting % 10) * 100000000; if(bdy_count == 9){wpoint_y += (NTexting - (NTexting % 10)) * 100000; continue;} wpoint_dvz += Cnvrt_D_I(Cnvrt_I_D(NTexting - (NTexting % 10)) * 0.1 * Cnvrt_I_D(10 ^ bdy_count)); continue;}
 	      if(RTexting.compare("bdy_end:") == 0) goto Bdy_End2;
+		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 		 }
-		 goto TextEnd; Bdy_End2: bdy_count += 1; if(x_neg){if(y_neg){if(z_neg){bdy_w[bdies] += 700000000;} else {bdy_w[bdies] += 400000000;}} else {if(z_neg){bdy_w[bdies] += 500000000;} else {bdy_w[bdies] += 100000000;}}} else {if(y_neg){if(z_neg){bdy_w[bdies] += 600000000;} else {bdy_w[bdies] += 200000000;}} else {if(z_neg){bdy_w[bdies] += 300000000;} else {continue;}}} continue;
+		 NewData << "#dddd#";
+		 goto TextEnd;
+	     Bdy_End2:
+		 switch(bdies)
+		 {
+		  case 0:
+		   cpoint_dircontrol = Requsive;
+		  break;
+		  case 1:
+		   cpoint_throwvx = Requsive;
+		  break;
+		  case 2:
+		   cpoint_throwvy = Requsive;
+		  break;
+		  case 3:
+		   cpoint_throwvz = Requsive;
+		  break;
+		  case 4:
+		   cpoint_throwinjury = Requsive;
+		  break;
+		  default: break;
+		 }
+		 bdy_count += 1; if(x_neg){if(y_neg){if(z_neg){bdy_w[bdies] += 700000000;} else {bdy_w[bdies] += 400000000;}} else {if(z_neg){bdy_w[bdies] += 500000000;} else {bdy_w[bdies] += 100000000;}}} else {if(y_neg){if(z_neg){bdy_w[bdies] += 600000000;} else {bdy_w[bdies] += 200000000;}} else {if(z_neg){bdy_w[bdies] += 300000000;} else {continue;}}} continue;
 		}
 	   }
 	   if(RTexting.compare("opoint:") == 0)
@@ -543,18 +575,91 @@
 	     if(RTexting.compare("dvx:") == 0)   {OldData >> NTexting; opoint_dvx = NTexting; continue;}
 	     if(RTexting.compare("dvy:") == 0)   {OldData >> NTexting; opoint_dvy = NTexting; continue;}
 	     if(RTexting.compare("opoint_end:") == 0) goto Opoint_End;
+		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 		}
+		NewData << "#cccc#";
 		goto TextEnd; Opoint_End: continue;
 	   }
 	   if(RTexting.compare("cpoint:") == 0)
 	   {
+		bool x_neg = false; bool y_neg = false; bool z_neg = false;
 		while(OldData)
 		{
 		 OldData >> RTexting;
-	     if(RTexting.compare("kind:") == 0){OldData >> NTexting; cpoint_kind += NTexting * 10; continue;}
+		 //
+		 // cpoint_kind => return:, strength:.
+		 // cpoint_x => x:, y:.
+		 // cpoint_y => z:, vict_x_vel:.
+		 // cpoint_cover => time:, vict_y_vel:.
+		 // cpoint_injury => damage:.
+		 // cpoint_hurtable => vict_act:, vict_vel:, vict_z_vel:.
+		 // cpoint_decrease => vict_hurt:, spark:, hitlag:, kind:.
+		 //
+	     if(RTexting.compare("kind:") == 0)      {OldData >> NTexting; cpoint_decrease += NTexting; continue;}
+	     if(RTexting.compare("x:") == 0)         {OldData >> NTexting; if(NTexting < 0){x_neg = true; cpoint_x -= NTexting * 10;} else {cpoint_x += NTexting * 10;} continue;}
+	     if(RTexting.compare("y:") == 0)         {OldData >> NTexting; if(NTexting < 0){y_neg = true; cpoint_x -= NTexting * 100000;} else {cpoint_x += NTexting * 100000;} continue;}
+	     if(RTexting.compare("z:") == 0)         {OldData >> NTexting; if(NTexting < 0){z_neg = true; cpoint_y -= NTexting;} else {cpoint_y += NTexting;} continue;}
+	     if(RTexting.compare("time:") == 0)      {OldData >> NTexting; cpoint_cover += NTexting; continue;}
+		 if(RTexting.compare("strength:") == 0)  {OldData >> NTexting; cpoint_kind += NTexting * 10000; continue;}
+	     if(RTexting.compare("return:") == 0)    {OldData >> NTexting; cpoint_kind += NTexting * 10; continue;}
+	     if(RTexting.compare("spark:") == 0)     {OldData >> NTexting; cpoint_decrease += NTexting * 100; continue;}
+	     if(RTexting.compare("hitlag:") == 0)    {OldData >> NTexting; cpoint_decrease += NTexting * 10; continue;}
+	     if(RTexting.compare("damage:") == 0)    {OldData >> NTexting; cpoint_injury += NTexting; continue;}
+	     if(RTexting.compare("hurtact:") == 0)   {OldData >> NTexting; cpoint_cover = NTexting; OldData >> NTexting; cpoint_cover += NTexting * 1000; continue;}
+	     if(RTexting.compare("vict_act:") == 0)  {OldData >> NTexting; cpoint_hurtable += NTexting; continue;}
+	     if(RTexting.compare("vict_hurt:") == 0) {OldData >> NTexting; cpoint_decrease += NTexting * 1000; continue;}
+	     if(RTexting.compare("vict_vel:") == 0)  {OldData >> NTexting; cpoint_hurtable = NTexting * 1000; continue;}
+	     if(RTexting.compare("vict_x_vel:") == 0){OldData >> NTexting; cpoint_y += NTexting * 10000; continue;}
+	     if(RTexting.compare("vict_y_vel:") == 0){OldData >> NTexting; cpoint_cover += NTexting * 10000; continue;}
+	     if(RTexting.compare("vict_z_vel:") == 0){OldData >> NTexting; cpoint_hurtable += NTexting * 10000; continue;}
 	     if(RTexting.compare("cpoint_end:") == 0) goto Cpoint_End;
+		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 		}
-		goto TextEnd; Cpoint_End: continue;
+		NewData << "#bbbb#";
+		goto TextEnd; Cpoint_End: if(x_neg){if(y_neg){if(z_neg){cpoint_x += 7;} else {cpoint_x += 4;}} else {if(z_neg){cpoint_x += 5;} else {cpoint_x += 1;}}} else {if(y_neg){if(z_neg){cpoint_x += 6;} else {cpoint_x += 2;}} else {if(z_neg){cpoint_x += 3;} else {continue;}}} continue;
+	   }
+	   if(RTexting.compare("wpoint:") == 0)
+	   {
+		bool x_neg = false; bool y_neg = false; bool z_neg = false;
+		if(wpoint_count % 2 == 0)
+		{
+		 while(OldData)
+		 {
+		  OldData >> RTexting;
+		  //wpoint_kind => x:, y:.
+		  //wpoint_x => z: weap_act:, weap_atk:
+		  //wpoint_y => weap_vel:, kind:.
+	      if(RTexting.compare("kind:") == 0)      {OldData >> NTexting; wpoint_y += NTexting * 10; continue;}
+	      if(RTexting.compare("x:") == 0)         {OldData >> NTexting; if(NTexting < 0){x_neg = true; wpoint_kind -= NTexting * 10;} else {wpoint_kind += NTexting * 10;} continue;}
+	      if(RTexting.compare("y:") == 0)         {OldData >> NTexting; if(NTexting < 0){y_neg = true; wpoint_kind -= NTexting * 100000;} else {wpoint_kind += NTexting * 100000;} continue;}
+	      if(RTexting.compare("z:") == 0)         {OldData >> NTexting; if(NTexting < 0){z_neg = true; wpoint_x -= NTexting;} else {wpoint_x += NTexting;} continue;}
+	      if(RTexting.compare("weap_act:") == 0)  {OldData >> NTexting; wpoint_x += NTexting * 10000; continue;}
+	      if(RTexting.compare("weap_atk:") == 0)  {OldData >> NTexting; wpoint_x += NTexting * 10000000; continue;}
+	      if(RTexting.compare("weap_vel:") == 0)  {OldData >> NTexting; wpoint_y += NTexting; continue;}
+	      if(RTexting.compare("wpoint_end:") == 0) goto Wpoint_End;
+		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
+		 }
+		 goto TextEnd; Wpoint_End: wpoint_count += 1; if(x_neg){if(y_neg){if(z_neg){wpoint_kind += 7;} else {wpoint_kind += 4;}} else {if(z_neg){wpoint_kind += 5;} else {wpoint_kind += 1;}}} else {if(y_neg){if(z_neg){wpoint_kind += 6;} else {wpoint_kind += 2;}} else {if(z_neg){wpoint_kind += 3;} else {continue;}}} continue;
+		} else
+		{
+		 while(OldData)
+		 {
+		  OldData >> RTexting;
+		  //wpoint_kind => x:, y:.
+		  //wpoint_x => z: weap_act:, weap_atk:
+		  //wpoint_y => weap_vel:, kind:.
+	      if(RTexting.compare("kind:") == 0)      {OldData >> NTexting; wpoint_y += NTexting * 10000; continue;}
+	      if(RTexting.compare("x:") == 0)         {OldData >> NTexting; if(NTexting < 0){x_neg = true; wpoint_weaponact -= NTexting * 10;} else {wpoint_weaponact += NTexting * 10;} continue;}
+	      if(RTexting.compare("y:") == 0)         {OldData >> NTexting; if(NTexting < 0){y_neg = true; wpoint_weaponact -= NTexting * 100000;} else {wpoint_weaponact += NTexting * 100000;} continue;}
+	      if(RTexting.compare("z:") == 0)         {OldData >> NTexting; if(NTexting < 0){z_neg = true; wpoint_attacking -= NTexting;} else {wpoint_attacking += NTexting;} continue;}
+	      if(RTexting.compare("weap_act:") == 0)  {OldData >> NTexting; wpoint_attacking += NTexting * 10000; continue;}
+	      if(RTexting.compare("weap_atk:") == 0)  {OldData >> NTexting; wpoint_attacking += NTexting * 10000000; continue;}
+	      if(RTexting.compare("weap_vel:") == 0)  {OldData >> NTexting; wpoint_y += NTexting * 1000; continue;}
+	      if(RTexting.compare("wpoint_end:") == 0) goto Wpoint_End2;
+		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
+		 }
+		 goto TextEnd; Wpoint_End2: wpoint_count += 1; if(x_neg){if(y_neg){if(z_neg){wpoint_weaponact += 7;} else {wpoint_weaponact += 4;}} else {if(z_neg){wpoint_weaponact += 5;} else {wpoint_weaponact += 1;}}} else {if(y_neg){if(z_neg){wpoint_weaponact += 6;} else {wpoint_weaponact += 2;}} else {if(z_neg){wpoint_weaponact += 3;} else {continue;}}} continue;
+		}
 	   }
 	   if(RTexting.compare("pic:") == 0)     {OldData >> NTexting; main_pic = NTexting; continue;}
 	   if(RTexting.compare("state:") == 0)   {OldData >> NTexting; main_state = NTexting; continue;}
@@ -586,13 +691,22 @@
 	   if(RTexting.compare("input_^^:") == 0){OldData >> NTexting; main_hit_da += (NTexting % 1000) * 1000; itr_respond[0] += (NTexting - (NTexting % 1000)) / 1000; continue;}
 	   if(RTexting.compare("input_vv:") == 0){OldData >> NTexting; main_hit_da += (NTexting % 1000) * 1000000; itr_respond[0] += (NTexting - (NTexting % 1000)) / 10; continue;}
 	   if(RTexting.compare("sound:") == 0)   {OldData >> RTexting; main_sound = RTexting; main_sound_ex = true; continue;}
+	   if(RTexting.compare("blood_x:") == 0) {OldData >> NTexting; main_blood_x = NTexting; main_blood_ex = true; continue;}
+	   if(RTexting.compare("blood_y:") == 0) {OldData >> NTexting; main_blood_y = NTexting; main_blood_ex = true; continue;}
+	   if(RTexting.compare("mp:") == 0)      {OldData >> NTexting; main_mp = NTexting; continue;}
 	   if(RTexting.compare("<frame_end>") == 0) goto FrameEnd;
+	   RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 	  }
 	  goto TextEnd;
       FrameEnd:
-	  NewData << "<frame> " << frame_num << " " << frame_name << " pic: " << main_pic << " state: " << main_state << " wait: " << main_wait << " next: " << main_next << " dvz: " << main_dvz << " centerx: " << main_centerx << " centery: " << main_centery << " hit_a: " << main_hit_a << " hit_d: " << main_hit_d << " hit_j: " << main_hit_j << " hit_Fa: " << main_hit_fa << " hit_Fj: " << main_hit_fj << " hit_Da: " << main_hit_da << " hit_Dj: " << main_hit_da << " hit_Ua: " << main_hit_ua << " hit_Uj: " << main_hit_uj << " hit_ja: " << main_hit_ja;
+	  wpoint_y += itr_count * 10000000;
+	  wpoint_dvy += bdy_count;
+	  RTexting2 = frame_name[0] + frame_name[1];
+	  if(RTexting2.compare("S:") == 0) main_dvz = 999999999;
+	  NewData << "<frame> " << frame_num << " " << frame_name << " pic: " << main_pic << " state: " << main_state << " wait: " << main_wait << " next: " << main_next << " dvx: " << main_dvx << " dvy: " << main_dvy << " dvz: " << main_dvz << " centerx: " << main_centerx << " centery: " << main_centery - singularity << " hit_a: " << main_hit_a << " hit_d: " << main_hit_d << " hit_j: " << main_hit_j << " hit_Fa: " << main_hit_fa << " hit_Fj: " << main_hit_fj << " hit_Da: " << main_hit_da << " hit_Dj: " << main_hit_da << " hit_Ua: " << main_hit_ua << " hit_Uj: " << main_hit_uj << " hit_ja: " << main_hit_ja;
 	  if(main_sound_ex) NewData << " sound: " << main_sound;
-	  NewData << " opoint: kind: " << opoint_kind << " x: " << opoint_x << " y: " << opoint_y << " oid: " << opoint_oid << " action: " << opoint_action << " facing: " << opoint_facing << " dvx: " << opoint_dvx << " dvy: " << opoint_dvy << " opoint_end: cpoint: kind: " << cpoint_kind << " x: " << cpoint_x << " y: " << cpoint_y << " vaction: " << cpoint_vaction << " aaction: " << cpoint_aaction << " daction: " << cpoint_daction << " jaction: " << cpoint_jaction << " taction: " << cpoint_taction << " cover: " << cpoint_cover << " injury: " << cpoint_injury << " dircontrol: " << cpoint_dircontrol << " decrease: " << cpoint_decrease << " hurtable: " << cpoint_hurtable << " throwvx: " << cpoint_throwvx << " throwvy: " << cpoint_throwvy << " throwvz: " << cpoint_throwvz << " throwinjury: " << cpoint_throwinjury << " cpoint_end: wpoint: kind: " << wpoint_kind << " x: " << wpoint_x << " y: " << wpoint_y << " weaponact: " << wpoint_weaponact << " attacking: " << wpoint_attacking << " cover: " << wpoint_cover << " dvx: " << wpoint_dvx << " dvy: " << wpoint_dvy << " dvz: " << wpoint_dvz << " wpoint_end: ";
+	  if(main_blood_ex) NewData << " bpoint: x: " << main_blood_x << " y: " << main_blood_y << " bpoint_end:";
+	  NewData << " mp: " << main_mp << " opoint: kind: " << opoint_kind << " x: " << opoint_x << " y: " << opoint_y << " oid: " << opoint_oid << " action: " << opoint_action << " facing: " << opoint_facing << " dvx: " << opoint_dvx << " dvy: " << opoint_dvy << " opoint_end: cpoint: kind: " << cpoint_kind << " x: " << cpoint_x << " y: " << cpoint_y << " vaction: " << cpoint_vaction << " aaction: " << cpoint_aaction << " daction: " << cpoint_daction << " jaction: " << cpoint_jaction << " taction: " << cpoint_taction << " cover: " << cpoint_cover << " injury: " << cpoint_injury << " dircontrol: " << cpoint_dircontrol << " decrease: " << cpoint_decrease << " hurtable: " << cpoint_hurtable << " throwvx: " << cpoint_throwvx << " throwvy: " << cpoint_throwvy << " throwvz: " << cpoint_throwvz << " throwinjury: " << cpoint_throwinjury << " cpoint_end: wpoint: kind: " << wpoint_kind << " x: " << wpoint_x << " y: " << wpoint_y << " weaponact: " << wpoint_weaponact << " attacking: " << wpoint_attacking << " cover: " << wpoint_cover << " dvx: " << wpoint_dvx << " dvy: " << wpoint_dvy << " dvz: " << wpoint_dvz << " wpoint_end: ";
 	  for(int itring = 0; itring < 5; ++itring)
 	  NewData << "itr: kind: " << itr_kind[itring] << " x: " << itr_x[itring] << " y: " << itr_y[itring] << " w: " << itr_w[itring] << " h: " << itr_h[itring] << " zwidth: " << itr_zwidth[itring] << " dvx: " << itr_dvx[itring] << " dvy: " << itr_dvy[itring] << " fall: " << itr_fall[itring] << " arest: " << itr_arest[itring] << " vrest: " << itr_vrest[itring] << " respond: " << itr_respond[itring] << " effect " << itr_effect[itring] << " catchingact: " << itr_catchingact1[itring] << " " << itr_catchingact2[itring] << " caughtact: " << itr_caughtact1[itring] << " " << itr_caughtact2[itring] << " bdefend: " << itr_bdefend[itring] << " injury: " << itr_injury[itring] << " itr_end: ";
 	  for(int bdying = 0; bdying < 5; ++bdying)
@@ -694,6 +808,9 @@
    RebuildingAInSystem.close();
    AInSystemRebuild.close();
   }
+  std::ifstream FindSingularity("data\\23.as");
+  std::string DumpString;
+  if(FindSingularity.is_open()){while(FindSingularity){FindSingularity >> DumpString; if(DumpString.compare("YSingularity") == 0){FindSingularity >> DumpString; FindSingularity >> singularity; goto Founditout;}} Founditout: FindSingularity.close();}
 
   strcpy(classicPath, gamePath);
   strcat(classicPath, "\\Database\\ver.txt");
@@ -1231,13 +1348,6 @@
   return game->objects[self.num]->enemy = object_num;
  }
  int Camera(){return *(int*)0x450bc4;}
- int Cnvrt_F_I(float vit){return static_cast<int>(vit);}
- int Cnvrt_D_I(double vit){return static_cast<int>(vit);}
- double Cnvrt_F_D(float vit){return static_cast<double>(vit);}
- double Cnvrt_I_D(int vit){return static_cast<double>(vit);}
- float Cnvrt_D_F(double vit){return static_cast<float>(vit);}
- float Cnvrt_I_F(int vit){return static_cast<float>(vit);}
- double Cnvrt_Round(double vit){return round(vit);}
 
  void A(int vit, char key, char holding)    {game->objects[vit]->A = key; game->objects[vit]->holding_a = holding;}
  void D(int vit, char key, char holding)    {game->objects[vit]->D = key; game->objects[vit]->holding_d = holding;}
@@ -1904,8 +2014,8 @@
    freopen("CONIN$", "rb", stdin);   // reopen stdin handle as console window input
    freopen("CONOUT$", "wb", stdout); // reopen stout handle as console window output
    freopen("CONOUT$", "wb", stderr); // reopen stderr handle as console window output
-   std::ifstream FindBufferSize("data\\23.as");
    std::string DumpString;
+   std::ifstream FindBufferSize("data\\23.as");
    BufferSize = 60;
    if(FindBufferSize.is_open()){while(FindBufferSize){FindBufferSize >> DumpString; if(DumpString.compare("ConsoleBuffer") == 0){FindBufferSize >> DumpString; FindBufferSize >> BufferSize; goto FoundIt;}} FindBufferSize.close();}
    FoundIt:
