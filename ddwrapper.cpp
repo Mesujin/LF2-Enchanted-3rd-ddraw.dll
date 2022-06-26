@@ -516,7 +516,6 @@
 	      if(RTexting.compare("bdy_end:") == 0) goto Bdy_End;
 		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 		 }
-		NewData << "#eeee#";
 		 goto TextEnd; Bdy_End: bdy_count += 1; if(x_neg){if(y_neg){if(z_neg){bdy_kind[bdies] += 700000000;} else {bdy_kind[bdies] += 400000000;}} else {if(z_neg){bdy_kind[bdies] += 500000000;} else {bdy_kind[bdies] += 100000000;}}} else {if(y_neg){if(z_neg){bdy_kind[bdies] += 600000000;} else {bdy_kind[bdies] += 200000000;}} else {if(z_neg){bdy_kind[bdies] += 300000000;} else {continue;}}} continue;
 		} else
 		{
@@ -536,7 +535,6 @@
 	      if(RTexting.compare("bdy_end:") == 0) goto Bdy_End2;
 		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 		 }
-		 NewData << "#dddd#";
 		 goto TextEnd;
 	     Bdy_End2:
 		 switch(bdies)
@@ -577,7 +575,6 @@
 	     if(RTexting.compare("opoint_end:") == 0) goto Opoint_End;
 		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 		}
-		NewData << "#cccc#";
 		goto TextEnd; Opoint_End: continue;
 	   }
 	   if(RTexting.compare("cpoint:") == 0)
@@ -615,7 +612,6 @@
 	     if(RTexting.compare("cpoint_end:") == 0) goto Cpoint_End;
 		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 		}
-		NewData << "#bbbb#";
 		goto TextEnd; Cpoint_End: if(x_neg){if(y_neg){if(z_neg){cpoint_x += 7;} else {cpoint_x += 4;}} else {if(z_neg){cpoint_x += 5;} else {cpoint_x += 1;}}} else {if(y_neg){if(z_neg){cpoint_x += 6;} else {cpoint_x += 2;}} else {if(z_neg){cpoint_x += 3;} else {continue;}}} continue;
 	   }
 	   if(RTexting.compare("wpoint:") == 0)
@@ -647,14 +643,14 @@
 		  OldData >> RTexting;
 		  //wpoint_kind => x:, y:.
 		  //wpoint_x => z: weap_act:, weap_atk:
-		  //wpoint_y => weap_vel:, kind:.
-	      if(RTexting.compare("kind:") == 0)      {OldData >> NTexting; wpoint_y += NTexting * 10000; continue;}
+		  //wpoint_y => weap_vel:, kind:
+	      if(RTexting.compare("kind:") == 0)      {OldData >> NTexting; wpoint_y += NTexting * 1000; continue;}
 	      if(RTexting.compare("x:") == 0)         {OldData >> NTexting; if(NTexting < 0){x_neg = true; wpoint_weaponact -= NTexting * 10;} else {wpoint_weaponact += NTexting * 10;} continue;}
 	      if(RTexting.compare("y:") == 0)         {OldData >> NTexting; if(NTexting < 0){y_neg = true; wpoint_weaponact -= NTexting * 100000;} else {wpoint_weaponact += NTexting * 100000;} continue;}
 	      if(RTexting.compare("z:") == 0)         {OldData >> NTexting; if(NTexting < 0){z_neg = true; wpoint_attacking -= NTexting;} else {wpoint_attacking += NTexting;} continue;}
 	      if(RTexting.compare("weap_act:") == 0)  {OldData >> NTexting; wpoint_attacking += NTexting * 10000; continue;}
 	      if(RTexting.compare("weap_atk:") == 0)  {OldData >> NTexting; wpoint_attacking += NTexting * 10000000; continue;}
-	      if(RTexting.compare("weap_vel:") == 0)  {OldData >> NTexting; wpoint_y += NTexting * 1000; continue;}
+	      if(RTexting.compare("weap_vel:") == 0)  {OldData >> NTexting; wpoint_y += NTexting * 100; continue;}
 	      if(RTexting.compare("wpoint_end:") == 0) goto Wpoint_End2;
 		  RTexting2 = RTexting[0]; if(RTexting2.compare("#") == 0){getline(OldData, RTexting); continue;}
 		 }
@@ -1387,8 +1383,12 @@
  void Control_FCDAct(int vit, int agi, int dex)     {game->objects[vit]->data->frames[agi].cpoint.daction = dex;}
  void Control_FWait(int vit, int agi, int dex)      {game->objects[vit]->data->frames[agi].wait = dex;}
  void Control_FOKind(int vit, int agi, int dex)     {game->objects[vit]->data->frames[agi].opoint.kind = dex;}
- void Control_Arest(int vit, int agi)               {game->objects[vit]->arest = agi;}
- void Control_Vrest(int vit, int agi, int dex)      {if(dex > 125){dex = 125;} else {if(dex < -125) dex = -125;} game->objects[vit]->vrests[agi] = static_cast<char>(dex);}
+ void Control_Rest(int vit)
+ {
+  game->objects[vit]->arest = 125;
+  for(int agi = 0; agi < 400; ++agi)
+  game->objects[vit]->vrests[agi] = 125;
+ }
  //void Control_InputNone(int vit)               {game->objects[vit]->A = 0; game->objects[vit]->D = 0; game->objects[vit]->J = 0; game->objects[vit]->up = 0; game->objects[vit]->left = 0; game->objects[vit]->down = 0; game->objects[vit]->right = 0; game->objects[vit]->DrA = 0; game->objects[vit]->DlA = 0; game->objects[vit]->DuA = 0; game->objects[vit]->DdA = 0; game->objects[vit]->DrJ = 0; game->objects[vit]->DlJ = 0; game->objects[vit]->DuJ = 0; game->objects[vit]->DdJ = 0; game->objects[vit]->DJA = 0;}
 
  void Control_InputNone(int vit)               {game->objects[vit]->A = 0; game->objects[vit]->holding_a = 0; game->objects[vit]->D = 0; game->objects[vit]->holding_d = 0; game->objects[vit]->J = 0; game->objects[vit]->holding_j = 0; game->objects[vit]->up = 0; game->objects[vit]->holding_up = 0; game->objects[vit]->left = 0; game->objects[vit]->holding_left = 0; game->objects[vit]->down = 0; game->objects[vit]->holding_down = 0; game->objects[vit]->right = 0; game->objects[vit]->holding_right = 0; game->objects[vit]->DrA = 0; game->objects[vit]->DlA = 0; game->objects[vit]->DuA = 0; game->objects[vit]->DdA = 0; game->objects[vit]->DrJ = 0; game->objects[vit]->DlJ = 0; game->objects[vit]->DuJ = 0; game->objects[vit]->DdJ = 0; game->objects[vit]->DJA = 0;}
@@ -1805,8 +1805,7 @@
   ScriptEngine->RegisterGlobalFunction("void Control_FWait(int vit, int agi, int dex)", asFUNCTION(Control_FWait), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void Control_FCDAct(int vit, int agi, int dex)", asFUNCTION(Control_FCDAct), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void Control_FOKind(int vit, int agi, int dex)", asFUNCTION(Control_FOKind), asCALL_CDECL);
-  ScriptEngine->RegisterGlobalFunction("void Control_Arest(int vit, int agi)", asFUNCTION(Control_Arest), asCALL_CDECL);
-  ScriptEngine->RegisterGlobalFunction("void Control_Vrest(int vit, int agi, int dex)", asFUNCTION(Control_Vrest), asCALL_CDECL);
+  ScriptEngine->RegisterGlobalFunction("void Control_Rest(int vit)", asFUNCTION(Control_Rest), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void Control_InputNone(int vit)", asFUNCTION(Control_InputNone), asCALL_CDECL);
 
   ScriptEngine->RegisterGlobalFunction("void Control_BG(int agi)", asFUNCTION(Control_BG), asCALL_CDECL);
